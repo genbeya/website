@@ -36,6 +36,7 @@ const labels = [
 
 <div class="logo" data-logo>
   <div class="logo__glow" aria-hidden="true"></div>
+  <div class="logo__shadow" aria-hidden="true" data-logo-shadow></div>
   <div class="logo__spot" aria-hidden="true" data-logo-spot></div>
 
   <div class="logo__layer" data-layer="wiki">
@@ -206,7 +207,7 @@ const labels = [
           </g>
         </mask>
       </defs>
-      <g id="gb-mono">
+      <g id="gb-mono" fill="currentColor">
         <rect width="512" height="512" mask="url(#gb-mono-left)"></rect>
         <rect width="512" height="512" mask="url(#gb-mono-right)"></rect>
         <rect width="512" height="512" mask="url(#gb-mono-back)"></rect>
@@ -249,11 +250,24 @@ const labels = [
     pointer-events: none;
   }
   .logo__glow {
-    inset: -18%;
+    inset: -20%;
     background:
-      radial-gradient(closest-side at 50% 54%, var(--logo-glow), transparent 72%),
-      radial-gradient(closest-side at 62% 40%, var(--logo-glow-2), transparent 80%);
-    opacity: 0.75;
+      radial-gradient(closest-side at 50% 50%, var(--logo-glow), transparent 70%),
+      radial-gradient(closest-side at 64% 36%, var(--logo-glow-2), transparent 80%);
+    opacity: 0.9;
+  }
+  /* The room stands on something: a soft shadow under the floor. */
+  .logo__shadow {
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    top: 85%;
+    height: 16%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.6), transparent);
+    pointer-events: none;
+  }
+  :global(:root[data-theme="light"]) .logo__shadow {
+    background: radial-gradient(closest-side, rgb(34 49 61 / 0.2), transparent);
   }
   .logo__spot {
     left: 0;

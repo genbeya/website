@@ -132,6 +132,7 @@ function build(story: HTMLElement, context: gsap.Context): () => void {
   const intro = gsap.timeline({ defaults: { ease: "expo.out" }, paused: !startsAtTop });
   intro
     .from(glow, { opacity: 0, scale: 0.55, duration: 1.8, ease: "power2.out" }, 0)
+    .from($("[data-logo-shadow]"), { opacity: 0, scaleX: 0.5, duration: 1.2, ease: "power3.out" }, 0.1)
     .from(partEl("team"), { yPercent: 16, opacity: 0, duration: 1.2 }, 0.05)
     .from(
       partEl("history"),
@@ -350,8 +351,10 @@ function build(story: HTMLElement, context: gsap.Context): () => void {
     /** Scrolls to the middle of a step's hold. */
     const scrollToStep = (step: number, behavior: ScrollBehavior) => {
       const t = step === 0 ? 0 : step + 0.25;
-      const y = trigger.start + (t / STORY_STEPS) * (trigger.end - trigger.start);
-      window.scrollTo({ top: y, behavior });
+      // From the layout itself: a trigger made a moment ago may not have measured yet.
+      const start = story.getBoundingClientRect().top + window.scrollY;
+      const distance = story.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: start + (t / STORY_STEPS) * distance, behavior });
     };
 
     const onRail = (event: Event) => {
