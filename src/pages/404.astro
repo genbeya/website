@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LogoMark from "../components/LogoMark.astro";
+---
+
+<BaseLayout title="Page not found" description="There is nothing at this address.">
+  <section class="not-found container" aria-labelledby="not-found-title">
+    <LogoMark size={56} />
+    <p class="eyebrow">404</p>
+    <h1 id="not-found-title">This room is empty</h1>
+    <p class="lead">There is nothing at this address — maybe it moved, like a page renamed in the wiki.</p>
+    <div class="actions">
+      <a class="button button--primary" href="/">Home</a>
+      <a class="button" href="/docs/">Documentation</a>
+      <a class="button" href="/download/">Download</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    justify-items: center;
+    min-height: 80vh;
+    align-content: center;
+    padding-top: var(--nav-height);
+    text-align: center;
+  }
+  .not-found .eyebrow {
+    margin-top: 2rem;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    letter-spacing: -0.04em;
+  }
+  .lead {
+    max-width: 30rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+</style>

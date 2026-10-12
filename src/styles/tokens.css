@@ -1,0 +1,94 @@
+/*
+ * Design tokens, shared by the marketing pages and the documentation (which maps
+ * Starlight's variables onto them). Dark is the default, as in the app; the theme
+ * script sets data-theme="light" when the system prefers it or the visitor toggles it.
+ */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+:root {
+  color-scheme: dark;
+
+  /* Brand */
+  --navy: #22313d;
+  --purple: #7c7ff2;
+  --white: #ffffff;
+
+  --font-ui: "Inter Variable", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", "Cascadia Code", ui-monospace, Consolas, monospace;
+  --font-jp: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "Noto Serif CJK JP", serif;
+
+  --bg: #0b0c0e;
+  --bg-2: #101114;
+  --surface: #15161a;
+  --surface-2: #1b1c21;
+  --surface-hover: #202127;
+  --line: rgb(255 255 255 / 0.07);
+  --line-strong: rgb(255 255 255 / 0.12);
+
+  --text: #ececf0;
+  --text-2: #a7a8b1;
+  --text-3: #75767f;
+
+  --accent: #7c7ff2;
+  --accent-hover: #8f92f6;
+  --accent-text: #aeb0ff;
+  --accent-soft: rgb(124 127 242 / 0.14);
+  --accent-line: rgb(124 127 242 / 0.35);
+  --on-accent: #ffffff;
+
+  --green: #4cb782;
+  --amber: #e2a64b;
+  --red: #ec6a6a;
+
+  /* The soft halo behind the logo, so its navy walls stand off the dark background. */
+  --logo-glow: rgb(124 127 242 / 0.55);
+  --logo-glow-2: rgb(98 160 255 / 0.18);
+
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.25);
+  --shadow-pop: 0 0 0 1px var(--line-strong), 0 24px 60px rgb(0 0 0 / 0.55), 0 4px 12px rgb(0 0 0 / 0.35);
+
+  --radius-s: 6px;
+  --radius: 10px;
+  --radius-l: 16px;
+  --radius-xl: 24px;
+
+  --nav-height: 4rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --content: 76rem;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f7f7f9;
+  --bg-2: #f0f0f4;
+  --surface: #ffffff;
+  --surface-2: #f6f6f9;
+  --surface-hover: #eeeef3;
+  --line: rgb(20 20 40 / 0.08);
+  --line-strong: rgb(20 20 40 / 0.14);
+
+  --text: #16171b;
+  --text-2: #55565f;
+  --text-3: #7c7d87;
+
+  --accent: #5b5fe0;
+  --accent-hover: #4b4fd4;
+  --accent-text: #4448c9;
+  --accent-soft: rgb(91 95 224 / 0.1);
+  --accent-line: rgb(91 95 224 / 0.3);
+
+  --green: #23905b;
+  --amber: #b77a12;
+  --red: #d64545;
+
+  --logo-glow: rgb(124 127 242 / 0.28);
+  --logo-glow-2: rgb(98 160 255 / 0.12);
+
+  --shadow-card: 0 1px 2px rgb(20 20 40 / 0.06), 0 8px 24px rgb(20 20 40 / 0.06);
+  --shadow-pop: 0 0 0 1px var(--line-strong), 0 24px 60px rgb(20 20 40 / 0.14), 0 4px 12px rgb(20 20 40 / 0.06);
+}

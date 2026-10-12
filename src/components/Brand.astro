@@ -1,0 +1,43 @@
+---
+import LogoMark from "./LogoMark.astro";
+
+/** The mark and the name, linking home. Shared by the site header and the docs header. */
+interface Props {
+  /** A small label after the name, such as "Docs". */
+  tag?: string;
+}
+const { tag } = Astro.props;
+---
+
+<a class="brand" href="/" aria-label="Genbeya home">
+  <LogoMark size={28} />
+  <span class="brand__name" translate="no">
+    Genbeya
+  </span>
+  {tag && <span class="brand__tag">{tag}</span>}
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 650;
+    font-size: 1.0625rem;
+    letter-spacing: -0.015em;
+    border-radius: var(--radius-s);
+    white-space: nowrap;
+  }
+  .brand__tag {
+    padding: 0.125rem 0.45rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--text-2);
+    font-size: 0.6875rem;
+    font-weight: 550;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+</style>

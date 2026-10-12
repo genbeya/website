@@ -1,0 +1,52 @@
+---
+/**
+ * Genbeya's small mark (branding/genbeya-small.svg), for 16 to 48 pixels, with the
+ * stylesheet turned into presentation attributes so the page needs no inline <style>.
+ */
+interface Props {
+  size?: number;
+  class?: string;
+}
+const { size = 28, class: className } = Astro.props;
+const navy = { fill: "#22313d", stroke: "#22313d", "stroke-width": 16, "stroke-linejoin": "round" } as const;
+const accent = { fill: "#7c7ff2", stroke: "#7c7ff2", "stroke-width": 16, "stroke-linejoin": "round" } as const;
+const page = { fill: "#ffffff", stroke: "#ffffff", "stroke-width": 12, "stroke-linejoin": "round" } as const;
+const ink = { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" } as const;
+---
+
+<svg
+  class:list={["logo-mark", className]}
+  viewBox="0 0 512 512"
+  width={size}
+  height={size}
+  aria-hidden="true"
+  focusable="false"
+>
+  <g transform="matrix(1 -0.42 0 1 0 149.4)">
+    <rect {...navy} x="28" y="0" width="134" height="240" rx="4"></rect>
+    <rect {...page} x="56" y="28" width="78" height="184" rx="2"></rect>
+    <path {...ink} stroke="#22313d" stroke-width="22" d="M80 86 H110 M80 138 H110"></path>
+  </g>
+  <g transform="matrix(1 0.42 0 1 0 -65.64)">
+    <rect {...navy} x="350" y="0" width="134" height="240" rx="4"></rect>
+    <rect {...page} x="378" y="28" width="78" height="184" rx="2"></rect>
+    <path {...ink} stroke="#22313d" stroke-width="22" d="M402 86 H432 M402 138 H432"></path>
+  </g>
+  <path {...accent} d="M196 60 L256 36 L316 60 L316 296 L256 270 L196 296 Z"></path>
+  <path {...ink} stroke="#ffffff" stroke-width="22" d="M234 100 V222 M234 206 C234 176 282 182 282 146"></path>
+  <circle cx="234" cy="98" r="24" fill="#ffffff"></circle>
+  <circle cx="234" cy="226" r="24" fill="#ffffff"></circle>
+  <circle cx="282" cy="140" r="24" fill="#ffffff"></circle>
+  <path {...accent} d="M256 312 L484 404 L256 496 L28 404 Z"></path>
+</svg>
+
+<style>
+  .logo-mark {
+    flex: none;
+    overflow: visible;
+  }
+  :global(:root[data-theme="dark"]) .logo-mark {
+    /* As in the app: a hairline and a soft halo, so the navy walls stand off the dark. */
+    filter: drop-shadow(0 0 0.5px rgb(255 255 255 / 0.5)) drop-shadow(0 0 6px var(--logo-glow));
+  }
+</style>

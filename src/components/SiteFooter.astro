@@ -1,0 +1,156 @@
+---
+import { site } from "../data/site";
+import LogoMark from "./LogoMark.astro";
+
+/** The footer of every page; `compact` inside the documentation's content column. */
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+const year = new Date().getFullYear();
+
+const columns = [
+  {
+    title: "Product",
+    links: [
+      { label: "Try it in your browser", href: "/try/" },
+      { label: "Download", href: "/download/" },
+      { label: "Documentation", href: "/docs/" },
+    ],
+  },
+  {
+    title: "Project",
+    links: [
+      { label: "GitHub", href: site.repository },
+      { label: "Releases", href: site.releases },
+      { label: "Report an issue", href: `${site.repository}/issues` },
+    ],
+  },
+];
+---
+
+<footer class:list={["site-footer", { "site-footer--compact": compact }]}>
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <a class="site-footer__home" href="/" aria-label="Genbeya home">
+        <LogoMark size={24} />
+        <span translate="no">Genbeya</span>
+      </a>
+      <p class="site-footer__privacy">{site.privacy}</p>
+    </div>
+    <nav class="site-footer__columns" aria-label="Footer">
+      {columns.map((column) => (
+        <div>
+          <h2>{column.title}</h2>
+          <ul>
+            {column.links.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  </div>
+  <div class="site-footer__legal">
+    <p>
+      {site.license ? `License: ${site.license}` : "License: to be decided"}
+      <span aria-hidden="true">·</span>
+      Made by {site.author}
+      <span aria-hidden="true">·</span>© {year}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background: var(--bg-2);
+    color: var(--text-2);
+    font-size: 0.875rem;
+    /* Room for the privacy notice, so it never covers the last line. */
+    padding-bottom: var(--notice-room, 0px);
+  }
+  .site-footer__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    max-width: var(--content);
+    margin-inline: auto;
+    padding: 3.5rem var(--gutter) 2rem;
+  }
+  .site-footer__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--text);
+    font-weight: 650;
+    text-decoration: none;
+  }
+  .site-footer__privacy {
+    max-width: 26rem;
+    margin: 0.9rem 0 0;
+    line-height: 1.6;
+  }
+  .site-footer__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  h2 {
+    margin: 0 0 0.75rem;
+    color: var(--text);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    color: var(--text-2);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--text);
+  }
+  .site-footer__legal {
+    max-width: var(--content);
+    margin-inline: auto;
+    padding: 1.25rem var(--gutter) 2rem;
+    border-top: 1px solid var(--line);
+    color: var(--text-3);
+    font-size: 0.8125rem;
+  }
+  .site-footer__legal p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    margin: 0;
+  }
+
+  .site-footer--compact {
+    margin-top: 4rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    background: transparent;
+  }
+  .site-footer--compact .site-footer__inner {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+  .site-footer--compact .site-footer__legal {
+    padding: 1rem 1.5rem 1.25rem;
+  }
+
+  @media (max-width: 47.99rem) {
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

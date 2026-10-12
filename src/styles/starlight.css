@@ -1,0 +1,259 @@
+/*
+ * Starlight, re-skinned to Genbeya: the site's tokens mapped onto Starlight's variables,
+ * and the styles of what remark-genbeya renders (references, embeds, diagrams).
+ */
+@import "./tokens.css";
+
+:root,
+::backdrop {
+  --sl-font: var(--font-ui);
+  --sl-font-mono: var(--font-mono);
+
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #ececf0;
+  --sl-color-gray-2: #c4c5cc;
+  --sl-color-gray-3: #9496a0;
+  --sl-color-gray-4: #5d5e67;
+  --sl-color-gray-5: #34353c;
+  --sl-color-gray-6: #1b1c21;
+  --sl-color-black: #0b0c0e;
+
+  --sl-color-accent-low: #1f2047;
+  --sl-color-accent: #7c7ff2;
+  --sl-color-accent-high: #c3c4ff;
+
+  --sl-color-text: #c9cad1;
+  --sl-color-text-accent: var(--accent-text);
+  --sl-color-bg-nav: color-mix(in srgb, var(--bg) 82%, transparent);
+  --sl-color-bg-sidebar: var(--bg);
+  --sl-color-bg-inline-code: var(--surface-2);
+  --sl-color-hairline: var(--line);
+  --sl-color-hairline-light: var(--line-strong);
+  --sl-color-hairline-shade: var(--line);
+
+  --sl-line-height: 1.7;
+  --sl-content-width: 46rem;
+  --sl-sidebar-width: 17.5rem;
+}
+
+:root[data-theme="light"],
+[data-theme="light"] ::backdrop {
+  --sl-color-white: #16171b;
+  --sl-color-gray-1: #24252b;
+  --sl-color-gray-2: #3a3b43;
+  --sl-color-gray-3: #5d5e67;
+  --sl-color-gray-4: #8a8b95;
+  --sl-color-gray-5: #c9cad2;
+  --sl-color-gray-6: #ececf1;
+  --sl-color-gray-7: #f6f6f9;
+  --sl-color-black: #ffffff;
+
+  --sl-color-accent-low: #e3e4ff;
+  --sl-color-accent: #5b5fe0;
+  --sl-color-accent-high: #2f3296;
+
+  --sl-color-text: #3a3b43;
+  --sl-color-bg-nav: color-mix(in srgb, #ffffff 82%, transparent);
+  --sl-color-bg-sidebar: var(--bg);
+}
+
+@media (min-width: 50em) {
+  :root {
+    --sl-nav-height: var(--nav-height);
+  }
+}
+
+body {
+  font-feature-settings: "cv11", "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.header {
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+}
+
+/* The privacy notice sits in the bottom-left corner: keep the sidebar's last links clear of it. */
+.sidebar-content {
+  padding-bottom: 4rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sl-markdown-content :is(h1, h2, h3, h4) {
+  letter-spacing: -0.02em;
+  font-weight: 650;
+}
+.sl-markdown-content h1#_top,
+h1#_top {
+  letter-spacing: -0.03em;
+}
+
+.sl-markdown-content :not(pre) > code {
+  border: 1px solid var(--line);
+  border-radius: 0.35em;
+  padding: 0.1em 0.35em;
+}
+
+.sl-markdown-content img {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.sl-markdown-content kbd {
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 0.35em;
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+}
+
+.sl-markdown-content table {
+  font-size: var(--sl-text-sm);
+}
+
+/* References: what `[[…]]` renders, styled after the app's chips. */
+.gb-ref {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  max-width: 100%;
+  padding: 0.05em 0.45em;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.4em;
+  background: var(--surface-2);
+  color: var(--sl-color-white);
+  font-size: 0.925em;
+  line-height: 1.5;
+  text-decoration: none;
+  vertical-align: baseline;
+  white-space: normal;
+}
+a.gb-ref:hover {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--sl-color-white);
+}
+.gb-ref__id,
+.gb-ref__path,
+.gb-ref__lines {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+}
+.gb-ref__id {
+  color: var(--sl-color-gray-3);
+}
+.gb-ref__lines {
+  color: var(--sl-color-gray-3);
+}
+.gb-ref__dot {
+  align-self: center;
+  width: 0.5em;
+  height: 0.5em;
+  flex: none;
+  border-radius: 50%;
+  background: var(--tone, var(--sl-color-gray-4));
+}
+.gb-ref__status {
+  padding: 0 0.45em;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tone, var(--sl-color-gray-4)) 16%, transparent);
+  color: var(--tone, var(--sl-color-gray-3));
+  font-size: 0.8em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.gb-tone-idle {
+  --tone: #8b8c96;
+}
+.gb-tone-active {
+  --tone: var(--amber);
+}
+.gb-tone-done {
+  --tone: var(--green);
+}
+.gb-ref--missing {
+  border-style: dashed;
+  background: transparent;
+  color: var(--sl-color-gray-3);
+}
+.gb-ref--page.gb-ref--missing {
+  border-color: color-mix(in srgb, var(--red) 55%, transparent);
+  color: var(--red);
+}
+.gb-ref-id {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  text-decoration-color: var(--tone, currentColor);
+  text-underline-offset: 0.2em;
+}
+
+.gb-embed-source {
+  margin-top: 0.4rem !important;
+  font-size: var(--sl-text-xs);
+  text-align: end;
+}
+.gb-embed-source a {
+  color: var(--sl-color-gray-3);
+}
+
+.gb-subpages {
+  padding-inline-start: 1.25rem;
+}
+
+/* Mermaid diagrams, rendered at build time in both themes. */
+.gb-diagram {
+  margin: 1.5rem 0 0;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow-x: auto;
+}
+.gb-diagram svg {
+  display: block;
+  height: auto;
+  margin-inline: auto;
+}
+.gb-diagram__theme--light {
+  display: none;
+}
+:root[data-theme="light"] .gb-diagram__theme--light {
+  display: block;
+}
+:root[data-theme="light"] .gb-diagram__theme--dark {
+  display: none;
+}
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.25rem;
+}
+
+/* Asides in the brand's colours. */
+.starlight-aside {
+  border-radius: var(--radius);
+  border-inline-start-width: 3px;
+}
+.starlight-aside--note {
+  --sl-color-asides-text-accent: var(--accent-text);
+  --sl-color-asides-border: var(--accent);
+  background-color: var(--accent-soft);
+}
+
+/* Pagination cards and other Starlight surfaces */
+.pagination-links a {
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+.pagination-links a:hover {
+  border-color: var(--accent-line);
+}

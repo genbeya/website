@@ -1,0 +1,16 @@
+---
+/**
+ * Starlight's sidebar without its state persistence (which uses sessionStorage):
+ * this site stores nothing in the browser.
+ */
+import SidebarSublist from "@astrojs/starlight/components/SidebarSublist.astro";
+import MobileMenuFooter from "./MobileMenuFooter.astro";
+
+const { sidebar } = Astro.locals.starlightRoute;
+---
+
+<SidebarSublist sublist={sidebar} />
+
+<div class="md:sl-hidden">
+  <MobileMenuFooter />
+</div>

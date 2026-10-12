@@ -1,0 +1,21 @@
+---
+/**
+ * Sets the theme before the first paint: the system's preference, followed live until the
+ * visitor picks one with the toggle. Nothing is stored, so every page load starts from the
+ * system's preference again. Also marks the page as scripted (`.js`) for progressive enhancement.
+ * Inline on purpose (no flash of the wrong theme); its hash is in the CSP.
+ */
+---
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const light = matchMedia("(prefers-color-scheme: light)");
+    const follow = () => {
+      if (!root.hasAttribute("data-theme-chosen")) root.dataset.theme = light.matches ? "light" : "dark";
+    };
+    follow();
+    light.addEventListener("change", follow);
+    root.classList.add("js");
+  })();
+</script>

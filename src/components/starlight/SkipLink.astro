@@ -1,0 +1,11 @@
+---
+/**
+ * Starlight's skip link, plus the privacy notice: both sit right in <body>, where the notice's
+ * fixed position isn't trapped under the sidebar or inside the blurred header.
+ */
+import DefaultSkipLink from "@astrojs/starlight/components/SkipLink.astro";
+import PrivacyNotice from "../PrivacyNotice.astro";
+---
+
+<DefaultSkipLink />
+<PrivacyNotice />

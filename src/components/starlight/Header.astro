@@ -1,0 +1,67 @@
+---
+/** The documentation's top bar: the same brand and sections as the marketing pages, plus search. */
+import Search from "@astrojs/starlight/components/Search.astro";
+import Brand from "../Brand.astro";
+import NavLinks from "../NavLinks.astro";
+import ThemeToggle from "../ThemeToggle.astro";
+---
+
+<div class="docs-header">
+  <div class="docs-header__brand">
+    <Brand tag="Docs" />
+  </div>
+  <div class="docs-header__search print:hidden">
+    <Search />
+  </div>
+  <div class="docs-header__nav print:hidden">
+    <NavLinks />
+    <ThemeToggle />
+  </div>
+</div>
+
+<style>
+  .docs-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+  }
+  .docs-header__brand {
+    flex: none;
+    min-width: 0;
+  }
+  .docs-header__search {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  .docs-header__nav {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 50rem) {
+    .docs-header {
+      display: grid;
+      grid-template-columns: calc(var(--sl-sidebar-width) - 2 * var(--sl-nav-pad-x)) minmax(0, 1fr) auto;
+      gap: var(--sl-nav-pad-x);
+    }
+    .docs-header__search {
+      justify-content: flex-start;
+      padding-inline-start: var(--sl-nav-pad-x);
+    }
+    .docs-header__search :global(site-search) {
+      width: 100%;
+      max-width: 22rem;
+    }
+    .docs-header__nav {
+      display: flex;
+    }
+  }
+  @media (min-width: 50rem) and (max-width: 63.99rem) {
+    .docs-header__nav :global(.nav__external span) {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,96 @@
+---
+import { isCurrent, nav } from "../data/site";
+import GitHubIcon from "./icons/GitHubIcon.astro";
+
+/** The site's sections. `layout="bar"` for the top bar, `"menu"` for the mobile menus. */
+interface Props {
+  layout?: "bar" | "menu";
+  label?: string;
+}
+const { layout = "bar", label = "Main" } = Astro.props;
+const pathname = Astro.url.pathname;
+---
+
+<nav class:list={["nav", `nav--${layout}`]} aria-label={label}>
+  <ul>
+    {nav.map((item) => (
+      <li>
+        <a
+          href={item.href}
+          aria-current={isCurrent(item, pathname) ? "page" : undefined}
+          class:list={{ nav__external: item.external }}
+        >
+          {item.external && <GitHubIcon size={16} />}
+          <span>{item.label}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    border-radius: var(--radius-s);
+    transition:
+      color 0.15s,
+      background-color 0.15s;
+  }
+  a:hover {
+    color: var(--text);
+  }
+  a[aria-current="page"] {
+    color: var(--text);
+  }
+
+  .nav--bar ul {
+    gap: 0.25rem;
+    align-items: center;
+  }
+  .nav--bar a {
+    position: relative;
+    padding: 0.45rem 0.7rem;
+  }
+  .nav--bar a:hover {
+    background: var(--surface-hover);
+  }
+  .nav--bar a[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0.7rem;
+    bottom: -0.6rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .nav--menu ul {
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .nav--menu a {
+    display: flex;
+    padding: 0.7rem 0.75rem;
+    font-size: 1rem;
+  }
+  .nav--menu a:hover,
+  .nav--menu a[aria-current="page"] {
+    background: var(--surface-hover);
+  }
+  .nav--menu a[aria-current="page"] {
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+</style>

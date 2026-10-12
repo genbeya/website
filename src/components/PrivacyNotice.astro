@@ -1,0 +1,97 @@
+---
+/**
+ * The almost invisible privacy notice. Closing it is deliberately not remembered: storing
+ * the dismissal would contradict what it says, so it comes back on every page load.
+ */
+---
+
+<aside class="privacy-notice" aria-label="Privacy" data-privacy-notice>
+  <p>We don't use cookies, don't track you and don't sell your data.</p>
+  <button type="button" data-privacy-close>
+    Thank you
+  </button>
+</aside>
+
+<script>
+  for (const notice of document.querySelectorAll<HTMLElement>("[data-privacy-notice]")) {
+    notice.querySelector("[data-privacy-close]")?.addEventListener("click", () => {
+      const hadFocus = notice.contains(document.activeElement);
+      notice.hidden = true;
+      // Keep keyboard users in place: hand focus to the page instead of losing it.
+      if (hadFocus) document.querySelector<HTMLElement>("main, [role=main]")?.focus({ preventScroll: true });
+    });
+  }
+</script>
+
+<style>
+  .privacy-notice {
+    position: fixed;
+    z-index: 40;
+    left: max(0.75rem, env(safe-area-inset-left));
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: calc(100vw - 1.5rem);
+    padding: 0.45rem 0.45rem 0.45rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--text-3);
+    font-family: var(--font-ui);
+    font-size: 0.71875rem;
+    line-height: 1.35;
+    opacity: 0.6;
+    transition:
+      opacity 0.25s var(--ease-out),
+      color 0.25s var(--ease-out),
+      border-color 0.25s var(--ease-out);
+  }
+  .privacy-notice:hover,
+  .privacy-notice:focus-within {
+    opacity: 1;
+    color: var(--text-2);
+    border-color: var(--line-strong);
+  }
+  .privacy-notice[hidden] {
+    display: none;
+  }
+  p {
+    margin: 0;
+  }
+  button {
+    flex: none;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 550;
+    cursor: pointer;
+  }
+  button:hover {
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  /* Phones: a slim strip along the bottom edge; the footer keeps room for it. */
+  @media (max-width: 47.99rem) {
+    .privacy-notice {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-width: none;
+      justify-content: space-between;
+      padding: 0.3rem 0.5rem calc(0.3rem + env(safe-area-inset-bottom)) 0.85rem;
+      border-width: 1px 0 0;
+      border-radius: 0;
+      font-size: 0.6875rem;
+    }
+    button {
+      padding: 0.2rem 0.6rem;
+    }
+  }
+</style>

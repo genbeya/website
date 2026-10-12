@@ -1,0 +1,99 @@
+---
+import Brand from "./Brand.astro";
+import NavLinks from "./NavLinks.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <Brand />
+    <div class="site-header__nav">
+      <NavLinks />
+    </div>
+    <div class="site-header__actions">
+      <ThemeToggle />
+      <button type="button" class="menu-button" popovertarget="site-menu" aria-label="Menu" aria-controls="site-menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div id="site-menu" class="site-menu" popover>
+    <NavLinks layout="menu" label="Main menu" />
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--nav-height);
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 100%;
+    max-width: var(--content);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .site-header__nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-inline-start: auto;
+  }
+  .menu-button {
+    display: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .menu-button:hover {
+    background: var(--surface-hover);
+  }
+  .menu-button path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  .site-menu {
+    inset: calc(var(--nav-height) + 0.5rem) 0.75rem auto auto;
+    width: min(18rem, calc(100vw - 1.5rem));
+    margin: 0;
+    padding: 0.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-pop);
+  }
+
+  @media (max-width: 47.99rem) {
+    .site-header__nav {
+      display: none;
+    }
+    .menu-button {
+      display: inline-grid;
+    }
+  }
+</style>
