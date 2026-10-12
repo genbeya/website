@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /try/app/
+
+Sitemap: https://genbeya.fyi/sitemap-index.xml
