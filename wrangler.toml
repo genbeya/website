@@ -1,0 +1,5 @@
+# Cloudflare Pages project for genbeya.fyi. The site is static: `npm run build` writes dist/,
+# with the security headers in dist/_headers. CI deploys it with `wrangler pages deploy`.
+name = "genbeya-website"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-01"

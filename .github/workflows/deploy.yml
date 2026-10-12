@@ -1,0 +1,126 @@
+name: Deploy
+
+# Builds genbeya.fyi and deploys it to Cloudflare Pages. It runs on every push to main, when
+# the app repository announces a release (repository_dispatch of type genbeya-release), and by
+# hand. The documentation, the browser demo and the download list come from the app's latest
+# v* release; before the first release, the docs come from the app's default branch, the demo
+# is a placeholder and the download page says the first release is coming.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  repository_dispatch:
+    types: [genbeya-release]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  APP_REPOSITORY: genbeya/genbeya
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Writes src/generated/release.json (or { "release": null }) and the outputs
+      # `tag` (empty without a release) and `has-demo`.
+      - name: Find the app's latest release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: npm run fetch-release -- --repo "$APP_REPOSITORY"
+
+      - name: Check out the app at that release
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ env.APP_REPOSITORY }}
+          ref: ${{ steps.release.outputs.tag }}
+          path: .cache/genbeya
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Sync the documentation
+        run: npm run sync-docs -- --repo .cache/genbeya --ref "${{ steps.release.outputs.tag || 'main' }}"
+
+      - name: Download the browser demo
+        if: steps.release.outputs.has-demo == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: gh release download "$TAG" --repo "$APP_REPOSITORY" --pattern genbeya-web-demo.zip --dir .cache
+
+      - name: Install the browser demo
+        run: |
+          if [ -f .cache/genbeya-web-demo.zip ]; then
+            npm run sync-demo -- --zip .cache/genbeya-web-demo.zip
+          else
+            npm run sync-demo -- --placeholder
+          fi
+
+      # Chromium draws the Mermaid diagrams at build time and runs the end-to-end tests.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: test-results
+          if-no-files-found: ignore
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://genbeya.fyi
+    env:
+      HAS_CLOUDFLARE: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist
+
+      - name: Deploy
+        if: env.HAS_CLOUDFLARE == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=genbeya-website --branch=main --commit-dirty=true
+
+      - name: Explain the skipped deploy
+        if: env.HAS_CLOUDFLARE != 'true'
+        run: echo "::notice::Not deployed; set the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets (see README)."
