@@ -39,7 +39,7 @@
     background: color-mix(in srgb, var(--surface) 94%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: color-mix(in srgb, var(--text-3) 85%, transparent);
+    color: var(--text-3);
     font-family: var(--font-ui);
     font-size: 0.71875rem;
     line-height: 1.35;
@@ -60,7 +60,6 @@
   }
   button {
     flex: none;
-    opacity: 0.8;
     padding: 0.3rem 0.7rem;
     border: 1px solid var(--line-strong);
     border-radius: 999px;
@@ -69,9 +68,6 @@
     font: inherit;
     font-weight: 550;
     cursor: pointer;
-  }
-  .privacy-notice:is(:hover, :focus-within) button {
-    opacity: 1;
   }
   button:hover {
     color: var(--text);

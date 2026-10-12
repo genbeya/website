@@ -55,6 +55,9 @@ export default defineConfig({
         ],
       ],
       rehypePlugins: [[rehypeKatex, { trust: false, strict: "ignore", throwOnError: false }]],
+      // Footnotes: a label that isn't a heading (so it stays out of the table of contents), and
+      // a back arrow drawn as text, not as an emoji.
+      remarkRehype: { footnoteLabelTagName: "p", footnoteBackContent: "↩︎" },
     }),
   },
   vite: {
@@ -95,6 +98,7 @@ export default defineConfig({
         { tag: "meta", attrs: { name: "twitter:card", content: "summary_large_image" } },
       ],
       components: {
+        Head: "./src/components/starlight/Head.astro",
         ThemeProvider: "./src/components/starlight/ThemeProvider.astro",
         ThemeSelect: "./src/components/starlight/ThemeSelect.astro",
         Header: "./src/components/starlight/Header.astro",
