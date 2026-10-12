@@ -36,7 +36,9 @@ const columns = [
         <LogoMark size={24} />
         <span translate="no">Genbeya</span>
       </a>
-      <p class="site-footer__privacy">{site.privacy}</p>
+      <p class="site-footer__privacy">
+        {site.privacy} <a href={site.source}>Check the site's source.</a>
+      </p>
     </div>
     <nav class="site-footer__columns" aria-label="Footer">
       {columns.map((column) => (
@@ -137,6 +139,7 @@ const columns = [
     margin: 0;
   }
   /* Links inside the sentence are underlined, so they stand out from it. */
+  .site-footer__privacy a,
   .site-footer__legal a {
     text-decoration: underline;
     text-underline-offset: 0.2em;

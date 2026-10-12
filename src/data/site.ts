@@ -14,6 +14,8 @@ export const site = {
     generated: { name: "MIT-0", url: "https://github.com/genbeya/genbeya/blob/main/LICENSE-MIT-0.md" },
   },
   privacy: "No cookies, no tracking, no data sold — this site makes no third-party requests.",
+  /** This site's own code, so anyone can check the privacy claim. */
+  source: "https://github.com/genbeya/website",
 } as const;
 
 export interface NavItem {
