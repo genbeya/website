@@ -1,0 +1,648 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../data/site";
+import {
+  archName,
+  formatName,
+  formatSize,
+  OS_NAMES,
+  OSES,
+  pickInstaller,
+  VARIANT_NAMES,
+  type Installer,
+} from "../../lib/downloads";
+import { release } from "../../lib/release";
+
+const description =
+  "Download Genbeya for Windows, macOS or Linux — Electron, Tauri or Deno Desktop. Free installers, straight from the GitHub release.";
+
+/** The recommended installer per system and architecture: what the big button offers. */
+const current = release;
+const recommended = current
+  ? [
+      { os: "windows", arch: "x64" },
+      { os: "macos", arch: "arm64" },
+      { os: "macos", arch: "x64" },
+      { os: "linux", arch: "x64" },
+    ].flatMap(({ os, arch }) => {
+      const pick = pickInstaller(current.installers, {
+        os: os as Installer["os"],
+        arch: arch as Installer["arch"],
+        mobile: false,
+      });
+      return pick.primary && pick.primary.arch === arch ? [{ installer: pick.primary, other: pick.otherArch }] : [];
+    })
+  : [];
+
+const published = release?.publishedAt
+  ? new Intl.DateTimeFormat("en-GB", { dateStyle: "long", timeZone: "UTC" }).format(new Date(release.publishedAt))
+  : undefined;
+
+const variants = [
+  {
+    id: "electron",
+    name: "Electron",
+    badge: "Recommended",
+    size: "about 110 MB",
+    body: "Ships its own Chromium, so it looks and behaves the same everywhere. The most tested build — the safe choice.",
+    systems: "Windows · macOS (Apple silicon and Intel) · Linux",
+  },
+  {
+    id: "tauri",
+    name: "Tauri",
+    badge: "Small",
+    size: "about 8 MB",
+    body: "Uses the system's webview (WebView2 on Windows, WebKit on macOS and Linux). Installs as “Genbeya Tauri”.",
+    systems: "Windows · macOS (Apple silicon) · Linux",
+  },
+  {
+    id: "deno",
+    name: "Deno Desktop",
+    badge: "Experimental",
+    size: "about 38 MB",
+    body: "For people who like trying experiments. No terminal, and genbeya:// links are pasted into the command palette. Installs as “Genbeya Deno”.",
+    systems: "Windows · macOS (Apple silicon) · Linux",
+  },
+];
+
+const byOs = (os: string) => release?.installers.filter((installer) => installer.os === os) ?? [];
+---
+
+<BaseLayout title="Download" description={description}>
+  <div class="page">
+    <section class="intro container" aria-labelledby="download-title">
+      <p class="eyebrow">Download</p>
+      <h1 id="download-title">Get Genbeya</h1>
+      {release ? (
+        <p class="meta">
+          Version <strong>{release.version}</strong>
+          {published && (
+            <>
+              <span aria-hidden="true">·</span> released {published}
+            </>
+          )}
+          <span aria-hidden="true">·</span>
+          <a href={release.url}>Release notes</a>
+          {release.sample && (
+            <span class="meta__sample">Sample data — the real list comes from GitHub when the site is built</span>
+          )}
+        </p>
+      ) : (
+        <p class="meta">Free for Windows, macOS and Linux.</p>
+      )}
+
+      {release ? (
+        <div class="pick" data-pick aria-live="polite">
+          <div class="pick__card pick__card--choose" data-pick-for="unknown">
+            <h2>Choose your system</h2>
+            <p>Every installer is listed below. Not sure which variant? Take Electron.</p>
+            <a class="button button--primary button--large" href="#all-downloads">
+              See all downloads
+            </a>
+          </div>
+
+          {recommended.map(({ installer, other }) => (
+            <div class="pick__card" data-pick-for={installer.name} hidden>
+              <p class="pick__detected" data-detected>
+                Recommended for your computer
+              </p>
+              <h2>
+                Genbeya for {OS_NAMES[installer.os]}
+                <span>{archName(installer.os, installer.arch)}</span>
+              </h2>
+              <p class="pick__details">
+                {VARIANT_NAMES[installer.variant]} · {formatName(installer.format)}
+                {installer.size ? ` · ${formatSize(installer.size)}` : ""}
+              </p>
+              <p class="pick__emulated" data-emulated hidden>
+                There is no ARM build for {OS_NAMES[installer.os]} yet; this one runs emulated.
+              </p>
+              <div class="pick__actions">
+                <a class="button button--primary button--large" href={installer.url} data-download={installer.name}>
+                  <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                    <path d="M8 2v8.5M4.5 7 8 10.5 11.5 7M3 13.5h10" />
+                  </svg>
+                  Download for {OS_NAMES[installer.os]}
+                </a>
+                {other && (
+                  <a class="pick__other" href={other.url} data-other-arch>
+                    {installer.arch === "arm64" ? "Intel Mac?" : "Apple silicon Mac?"} Download for{" "}
+                    {archName(other.os, other.arch)}
+                  </a>
+                )}
+              </div>
+              <p class="pick__file">
+                <code>{installer.name}</code>
+              </p>
+            </div>
+          ))}
+
+          <div class="pick__card" data-pick-for="mobile" hidden>
+            <h2>Genbeya is a desktop app</h2>
+            <p>
+              It runs on Windows, macOS and Linux. On this device, try it in your browser instead — or send yourself
+              this page for later.
+            </p>
+            <a class="button button--primary button--large" href="/try/">
+              Try it in your browser
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div class="soon" data-soon>
+          <h2>The first release is coming soon</h2>
+          <p>
+            Installers for Windows, macOS and Linux will appear here as soon as Genbeya's first release is published.
+            Until then, try it in your browser, or build it from source.
+          </p>
+          <div class="pick__actions">
+            <a class="button button--primary button--large" href="/try/">
+              Try it in your browser
+            </a>
+            <a class="button button--large" href={site.releases}>
+              Watch the releases
+            </a>
+            <a class="button button--large" href="/docs/development/">
+              Build from source
+            </a>
+          </div>
+        </div>
+      )}
+    </section>
+
+    {release && (
+      <section class="all container" id="all-downloads" aria-labelledby="all-title">
+        <h2 id="all-title">All downloads</h2>
+        <p class="all__lead">
+          Three variants of the same app, for three systems. They install side by side, each with its own settings; a
+          newer installer of a variant replaces the version you have.
+        </p>
+        <div class="table-wrap">
+          <table class="downloads">
+            <thead>
+              <tr>
+                <th scope="col">Variant</th>
+                <th scope="col">Architecture</th>
+                <th scope="col">Format</th>
+                <th scope="col">Size</th>
+                <th scope="col">
+                  <span class="sr-only">Download</span>
+                </th>
+              </tr>
+            </thead>
+            {OSES.map((os) => (
+              <tbody data-os={os}>
+                <tr class="downloads__os">
+                  <th scope="colgroup" colspan="5">
+                    {OS_NAMES[os]}
+                    <span class="downloads__yours" data-yours hidden>
+                      Your system
+                    </span>
+                  </th>
+                </tr>
+                {byOs(os).map((installer) => (
+                  <tr
+                    data-installer={installer.name}
+                    data-variant={installer.variant}
+                    data-os={installer.os}
+                    data-arch={installer.arch}
+                    data-format={installer.format}
+                    data-url={installer.url}
+                    data-size={installer.size ?? ""}
+                  >
+                    <td data-label="Variant">
+                      {VARIANT_NAMES[installer.variant]}
+                      {installer.variant === "electron" && <span class="tag">Recommended</span>}
+                    </td>
+                    <td data-label="Architecture">{archName(installer.os, installer.arch)}</td>
+                    <td data-label="Format">{formatName(installer.format)}</td>
+                    <td data-label="Size">{formatSize(installer.size)}</td>
+                    <td class="downloads__action">
+                      <a href={installer.url} aria-label={`Download ${installer.name}`}>
+                        Download
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            ))}
+          </table>
+        </div>
+        <p class="all__more">
+          Checksums, older versions and the source code are on the <a href={release.url}>release page on GitHub</a>.
+        </p>
+      </section>
+    )}
+
+    <section class="variants container" aria-labelledby="variants-title">
+      <h2 id="variants-title">Which variant?</h2>
+      <div class="variants__grid">
+        {variants.map((variant) => (
+          <article class:list={["variant", { "variant--recommended": variant.id === "electron" }]}>
+            <p class="variant__badge">{variant.badge}</p>
+            <h3>{variant.name}</h3>
+            <p>{variant.body}</p>
+            <dl>
+              <dt>Download</dt>
+              <dd>{variant.size}</dd>
+              <dt>Systems</dt>
+              <dd>{variant.systems}</dd>
+            </dl>
+          </article>
+        ))}
+      </div>
+      <p class="variants__more">
+        <a href="/docs/architecture/runtimes/">How the runtimes differ</a>
+      </p>
+    </section>
+
+    <section class="install container" aria-labelledby="install-title">
+      <h2 id="install-title">Installing</h2>
+      <p class="install__lead">
+        The installers are not signed yet, so your system asks before running them the first time. Genbeya needs
+        <strong>Git</strong> on the machine that holds the repository: this computer, the WSL distribution or the SSH
+        server.
+      </p>
+      <div class="install__grid">
+        <article class="step">
+          <h3>Windows</h3>
+          <ol>
+            <li>
+              Run the <code>-setup.exe</code> (or the <code>.msi</code>).
+            </li>
+            <li>
+              When SmartScreen warns, choose <em>More info</em>, then <em>Run anyway</em>.
+            </li>
+          </ol>
+        </article>
+        <article class="step">
+          <h3>macOS</h3>
+          <ol>
+            <li>
+              Open the <code>.dmg</code> and drag Genbeya to Applications.
+            </li>
+            <li>
+              The first time, open it with right-click → <em>Open</em>.
+            </li>
+            <li>
+              Or run <code>xattr -dr com.apple.quarantine "/Applications/Genbeya.app"</code>.
+            </li>
+          </ol>
+        </article>
+        <article class="step">
+          <h3>Linux</h3>
+          <ol>
+            <li>
+              Make the AppImage executable: <code>chmod +x Genbeya-*.AppImage</code>, then run it.
+            </li>
+            <li>
+              Or install the <code>.deb</code> or <code>.rpm</code> with your package manager.
+            </li>
+          </ol>
+        </article>
+      </div>
+      <p class="install__next">
+        Next: <a href="/docs/getting-started/">Getting started</a> — open a repository, try the sample project, take the
+        tour.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { initDownloadPage } from "../../scripts/download";
+  initDownloadPage();
+</script>
+
+<style>
+  .page {
+    padding: calc(var(--nav-height) + clamp(2.5rem, 7vw, 5rem)) 0 clamp(4rem, 8vw, 6rem);
+    background: radial-gradient(60rem 30rem at 50% -5%, rgb(124 127 242 / 0.14), transparent 70%);
+  }
+  .intro {
+    text-align: center;
+  }
+  .intro .eyebrow {
+    justify-content: center;
+  }
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    letter-spacing: -0.045em;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 0.6rem;
+    margin: 1rem 0 0;
+    color: var(--text-2);
+  }
+  .meta strong {
+    color: var(--text);
+  }
+  .meta__sample {
+    flex-basis: 100%;
+    color: var(--amber);
+    font-size: 0.8125rem;
+  }
+
+  .pick,
+  .soon {
+    max-width: 40rem;
+    min-height: 19rem;
+    margin: clamp(2rem, 5vw, 3rem) auto 0;
+  }
+  .pick__card,
+  .soon {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: clamp(1.75rem, 5vw, 2.75rem) clamp(1.25rem, 4vw, 2.5rem);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-xl);
+    background: radial-gradient(30rem 14rem at 50% 0%, rgb(124 127 242 / 0.14), transparent 70%), var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  .pick__card[hidden] {
+    display: none;
+  }
+  .pick h2,
+  .soon h2 {
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+    letter-spacing: -0.03em;
+  }
+  .pick h2 span {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--text-2);
+    font-size: 0.6em;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .pick p,
+  .soon p {
+    max-width: 30rem;
+    margin: 0;
+    color: var(--text-2);
+  }
+  .pick__detected {
+    padding: 0.2rem 0.7rem;
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-text) !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .pick__emulated {
+    color: var(--amber) !important;
+    font-size: 0.875rem;
+  }
+  .pick__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.75rem;
+  }
+  .pick__actions svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .pick__other {
+    color: var(--text-2);
+    font-size: 0.875rem;
+  }
+  .pick__file code {
+    color: var(--text-3);
+    font-size: 0.75rem;
+    word-break: break-all;
+  }
+
+  section + section {
+    margin-top: clamp(4rem, 9vw, 7rem);
+  }
+  .all h2,
+  .variants h2,
+  .install h2 {
+    font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+    letter-spacing: -0.035em;
+  }
+  .all__lead,
+  .install__lead {
+    max-width: 44rem;
+    margin: 0.9rem 0 2rem;
+    color: var(--text-2);
+  }
+  .table-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .downloads {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .downloads th,
+  .downloads td {
+    padding: 0.8rem 1.25rem;
+    text-align: left;
+  }
+  .downloads thead th {
+    border-bottom: 1px solid var(--line);
+    color: var(--text-3);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .downloads__os th {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+    background: var(--bg-2);
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 650;
+  }
+  tbody:first-of-type .downloads__os th {
+    border-top: 0;
+  }
+  .downloads__yours {
+    margin-left: 0.6rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+  .downloads td {
+    border-top: 1px solid var(--line);
+    color: var(--text-2);
+  }
+  .downloads td:first-child {
+    color: var(--text);
+    font-weight: 550;
+  }
+  tr.is-pick td {
+    background: var(--accent-soft);
+  }
+  .tag {
+    margin-left: 0.5rem;
+    padding: 0.05rem 0.45rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--text-3);
+    font-size: 0.6875rem;
+    font-weight: 550;
+  }
+  .downloads__action {
+    text-align: right !important;
+  }
+  .downloads__action a {
+    display: inline-flex;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.5rem;
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .downloads__action a:hover {
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+  }
+  .all__more {
+    margin: 1rem 0 0;
+    color: var(--text-3);
+    font-size: 0.875rem;
+  }
+
+  .variants__grid,
+  .install__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .variant,
+  .step {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+  .variant--recommended {
+    border-color: var(--accent-line);
+    background: radial-gradient(20rem 10rem at 0% 0%, rgb(124 127 242 / 0.14), transparent 70%), var(--surface);
+  }
+  .variant__badge {
+    display: inline-block;
+    margin: 0 0 0.75rem;
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .variant h3,
+  .step h3 {
+    font-size: 1.1875rem;
+  }
+  .variant p:not(.variant__badge) {
+    margin: 0.6rem 0 1rem;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+  }
+  .variant dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 1rem;
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+  .variant dt {
+    color: var(--text-3);
+  }
+  .variant dd {
+    margin: 0;
+    color: var(--text-2);
+  }
+  .variants__more,
+  .install__next {
+    margin: 1.25rem 0 0;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+  }
+  .step ol {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0.9rem 0 0;
+    padding-left: 1.2rem;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+  }
+  .step code,
+  .install code {
+    padding: 0.1em 0.35em;
+    border-radius: 0.3em;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.8em;
+    word-break: break-word;
+  }
+  .step em {
+    color: var(--text);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  @media (max-width: 63.99rem) {
+    .variants__grid,
+    .install__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 39.99rem) {
+    .downloads thead {
+      display: none;
+    }
+    .downloads,
+    .downloads tbody,
+    .downloads tr,
+    .downloads td,
+    .downloads th {
+      display: block;
+    }
+    .downloads tr[data-installer] {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.15rem 1rem;
+      padding: 0.85rem 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .downloads tr[data-installer] td {
+      padding: 0;
+      border: 0;
+    }
+    .downloads tr[data-installer] td:not(:first-child):not(.downloads__action) {
+      grid-column: 1;
+      font-size: 0.8125rem;
+    }
+    .downloads__action {
+      grid-column: 2;
+      grid-row: 1 / span 4;
+      align-self: center;
+    }
+    .downloads__os th {
+      padding: 1rem 1rem 0.6rem;
+    }
+  }
+</style>

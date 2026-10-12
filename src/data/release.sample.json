@@ -1,0 +1,71 @@
+{
+  "sample": true,
+  "release": {
+    "version": "0.0.1",
+    "tag": "v0.0.1",
+    "url": "https://github.com/genbeya/genbeya/releases/tag/v0.0.1",
+    "publishedAt": "2026-10-12T00:00:00Z",
+    "assets": [
+      {
+        "name": "Genbeya-0.0.1-electron-windows-x64-setup.exe",
+        "size": 112000000
+      },
+      {
+        "name": "Genbeya-0.0.1-electron-macos-arm64.dmg",
+        "size": 118000000
+      },
+      {
+        "name": "Genbeya-0.0.1-electron-macos-x64.dmg",
+        "size": 123000000
+      },
+      {
+        "name": "Genbeya-0.0.1-electron-linux-x64.AppImage",
+        "size": 121000000
+      },
+      {
+        "name": "Genbeya-0.0.1-tauri-windows-x64-setup.exe",
+        "size": 7900000
+      },
+      {
+        "name": "Genbeya-0.0.1-tauri-windows-x64.msi",
+        "size": 9600000
+      },
+      {
+        "name": "Genbeya-0.0.1-tauri-macos-arm64.dmg",
+        "size": 8400000
+      },
+      {
+        "name": "Genbeya-0.0.1-tauri-linux-x64.AppImage",
+        "size": 82000000
+      },
+      {
+        "name": "Genbeya-0.0.1-tauri-linux-x64.deb",
+        "size": 8100000
+      },
+      {
+        "name": "Genbeya-0.0.1-tauri-linux-x64.rpm",
+        "size": 8100000
+      },
+      {
+        "name": "Genbeya-0.0.1-deno-windows-x64.msi",
+        "size": 38000000
+      },
+      {
+        "name": "Genbeya-0.0.1-deno-macos-arm64.dmg",
+        "size": 39000000
+      },
+      {
+        "name": "Genbeya-0.0.1-deno-linux-x64.AppImage",
+        "size": 41000000
+      },
+      {
+        "name": "Genbeya-0.0.1-deno-linux-x64.deb",
+        "size": 37000000
+      },
+      {
+        "name": "genbeya-web-demo.zip",
+        "size": 4200000
+      }
+    ]
+  }
+}
