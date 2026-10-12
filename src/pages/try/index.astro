@@ -1,0 +1,231 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import wikiReferences from "../../assets/screens/wiki-references.png";
+
+const description =
+  "Try Genbeya in your browser: the whole app with a sample project, running in the page. Nothing is saved or sent anywhere; reloading starts over.";
+
+/** Written by `npm run sync-demo`: whether this build includes the demo bundle. */
+const status = Object.values(
+  import.meta.glob<{ available: boolean; source: string }>("../../generated/demo.json", {
+    eager: true,
+    import: "default",
+  }),
+)[0] ?? { available: false, source: "none" };
+
+const facts = [
+  {
+    title: "Everything runs in your browser",
+    body: "The app and a sample project with its wiki, tasks and history — all inside this tab.",
+  },
+  {
+    title: "Nothing is saved or sent",
+    body: "No account and no server. What you change stays in this tab; reloading starts over.",
+  },
+  {
+    title: "The same app as on the desktop",
+    body: "The wiki, the board, references, the editor and version control, as in the installers.",
+  },
+];
+---
+
+<BaseLayout title="Try it in your browser" description={description}>
+  <div class="page">
+    <section class="container try" aria-labelledby="try-title">
+      <div class="try__copy">
+        <p class="eyebrow">Try it</p>
+        <h1 id="try-title">Genbeya, right here in your browser</h1>
+        <p class="lead">
+          Look around a sample project — <em>Pocket Weather</em> — with a wiki full of references, a board with tasks in
+          every state, and a history to browse. Edit anything; nothing leaves this page.
+        </p>
+        <div class="try__actions">
+          <a class="button button--primary button--large" href="/try/app/" data-start-demo>
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+              <path d="M5 3.5v9l7-4.5z"></path>
+            </svg>
+            Start the demo
+          </a>
+          <a class="button button--large" href="/download/">
+            Download the app
+          </a>
+        </div>
+        {!status.available && (
+          <p class="try__note" data-demo-missing>
+            This build of the website doesn't include the demo yet; the button shows a placeholder.
+          </p>
+        )}
+        <p class="try__hint">
+          Best on a desktop or tablet. The demo opens full-window; use your browser's back button to return.
+        </p>
+      </div>
+
+      <div class="try__visual" aria-hidden="true">
+        <div class="window">
+          <div class="window__bar">
+            <span></span>
+            <span></span>
+            <span></span>
+            <p>genbeya.fyi/try/app</p>
+          </div>
+          <Image
+            src={wikiReferences}
+            alt=""
+            widths={[600, 1000]}
+            sizes="(min-width: 64rem) 38rem, 92vw"
+            loading="eager"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="container facts" aria-label="About the demo">
+      {facts.map((fact) => (
+        <article class="fact">
+          <h2>{fact.title}</h2>
+          <p>{fact.body}</p>
+        </article>
+      ))}
+    </section>
+
+    <section class="container next" aria-labelledby="next-title">
+      <h2 id="next-title">Liked it?</h2>
+      <p>
+        The desktop app opens your own repositories — on this computer, in WSL or over SSH.
+        <a href="/download/">Download it</a> or read <a href="/docs/getting-started/">Getting started</a>.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    padding: calc(var(--nav-height) + clamp(2.5rem, 7vw, 5.5rem)) 0 clamp(4rem, 8vw, 6rem);
+    background: radial-gradient(60rem 34rem at 75% 10%, rgb(124 127 242 / 0.16), transparent 70%);
+  }
+  .try {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+  h1 {
+    font-size: clamp(2.4rem, 5vw, 3.75rem);
+    letter-spacing: -0.045em;
+    line-height: 1.04;
+  }
+  .lead {
+    max-width: 34rem;
+    margin: 1.25rem 0 0;
+  }
+  .lead em {
+    color: var(--text);
+    font-style: normal;
+    font-weight: 600;
+  }
+  .try__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .try__actions svg {
+    fill: currentColor;
+  }
+  .try__note {
+    margin: 1rem 0 0;
+    color: var(--amber);
+    font-size: 0.875rem;
+  }
+  .try__hint {
+    margin: 1rem 0 0;
+    color: var(--text-3);
+    font-size: 0.8125rem;
+  }
+
+  .window {
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+    box-shadow:
+      var(--shadow-pop),
+      0 40px 120px -30px rgb(124 127 242 / 0.45);
+    transform: perspective(1400px) rotateY(-9deg) rotateX(3deg);
+  }
+  .window__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .window__bar span {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+  .window__bar p {
+    flex: 1;
+    margin: 0 2rem 0 0.75rem;
+    padding: 0.2rem 0.75rem;
+    border-radius: 0.4rem;
+    background: var(--bg-2);
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-align: center;
+  }
+  .window :global(img) {
+    width: 100%;
+  }
+  :global(:root[data-theme="dark"]) .window :global(img) {
+    filter: brightness(0.92);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: clamp(4rem, 9vw, 6.5rem);
+  }
+  .fact {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+  .fact h2 {
+    font-size: 1.0625rem;
+    letter-spacing: -0.015em;
+  }
+  .fact p {
+    margin: 0.5rem 0 0;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+  }
+  .next {
+    margin-top: clamp(3.5rem, 7vw, 5rem);
+    text-align: center;
+  }
+  .next h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+  .next p {
+    max-width: 36rem;
+    margin: 0.75rem auto 0;
+    color: var(--text-2);
+  }
+
+  @media (max-width: 63.99rem) {
+    .try,
+    .facts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .window {
+      transform: none;
+    }
+  }
+</style>
