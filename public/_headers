@@ -1,0 +1,24 @@
+# Security headers for Cloudflare Pages. The build (scripts/postbuild.ts) fills in the
+# hashes of the few inline scripts and styles (the theme script, Mermaid diagrams' styles)
+# where the policy below has placeholders, and checks every line's length.
+# Everything is served from this origin: no CDN, no analytics, no third-party requests.
+# 'wasm-unsafe-eval' lets Pagefind's search run its WebAssembly (it is not 'unsafe-eval').
+# Every browser feature is denied, except writing to the clipboard for the code blocks' copy buttons.
+
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'wasm-unsafe-eval' {{SCRIPT_HASHES}}; style-src 'self' {{STYLE_HASHES}}; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+  Referrer-Policy: no-referrer
+  Permissions-Policy: accelerometer=(), autoplay=(), bluetooth=(), browsing-topics=(), camera=(), compute-pressure=(), display-capture=(), encrypted-media=(), fullscreen=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), identity-credentials-get=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), otp-credentials=(), payment=(), picture-in-picture=(), publickey-credentials-create=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), storage-access=(), usb=(), window-management=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self)
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# The browser demo is the app's own bundle: it gets a policy of its own, still 'self' only.
+/try/app/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
