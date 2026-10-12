@@ -65,5 +65,8 @@
     "test:e2e": "playwright test",
     "screenshots": "node scripts/screenshots.ts",
     "brand-images": "node scripts/brand-images.ts"
+  },
+  "overrides": {
+    "katex": "$katex"
   }
 }
