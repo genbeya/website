@@ -12,7 +12,7 @@
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { generatedDir, log, option, parseArgs, root } from "./lib/cli.ts";
+import { generatedDir, log, option, parseArgs, root, toPosix } from "./lib/cli.ts";
 
 const SCRIPT = "sync-demo";
 export const target = path.join(root, "public", "try", "app");
@@ -93,7 +93,7 @@ export function syncDemo(args = parseArgs()): void {
   const source = path.resolve(root, option(args, "source", "GENBEYA_DEMO_DIR") ?? "../genbeya-demo/dist/demo/browser");
   if (existsSync(source) && statSync(source).isDirectory()) {
     const bundle = findBundle(source);
-    if (bundle) return install(bundle, path.relative(root, bundle) || ".");
+    if (bundle) return install(bundle, toPosix(path.relative(root, bundle)) || ".");
   }
   writePlaceholder(`no demo bundle at ${path.relative(root, source)}`);
 }

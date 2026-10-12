@@ -127,3 +127,26 @@ test.describe("accessibility basics", () => {
     }
   });
 });
+
+test.describe("browser demo", () => {
+  test("starts from /try/, runs within its policy, requests nothing elsewhere and stores nothing", async ({
+    page,
+    context,
+    watch,
+  }) => {
+    await page.goto("/try/");
+    await page.locator("[data-start-demo]").click();
+    await page.waitForURL("**/try/app/**");
+    test.skip(
+      (await page.getByText("The demo isn't part of this build").count()) > 0,
+      "This build has the demo placeholder.",
+    );
+    await expect(page.getByText("Pocket Weather").first()).toBeVisible({ timeout: 15_000 });
+    await page.getByText("Tasks", { exact: true }).first().click();
+    await page.waitForLoadState("networkidle");
+    expect(watch.foreignRequests).toEqual([]);
+    expect(watch.errors).toEqual([]);
+    expect(await storedState(page)).toEqual({ localStorage: 0, sessionStorage: 0, cookie: "", indexedDB: 0 });
+    expect(await context.cookies()).toEqual([]);
+  });
+});

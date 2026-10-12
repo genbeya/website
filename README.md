@@ -143,7 +143,7 @@ scripts, styles, fonts, images and connections from `'self'`; `'wasm-unsafe-eval
 `'unsafe-eval'`; `style-src-attr 'unsafe-inline'` for the style attributes of Expressive Code, KaTeX and GSAP; no
 frames), `Referrer-Policy: no-referrer`, a Permissions-Policy that denies every feature except writing to the clipboard
 (the code blocks' copy buttons), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and HSTS. The browser demo
-at `/try/app/` gets a policy of its own, still limited to this origin.
+at `/try/app/` gets a policy of its own that mirrors the one in its `index.html` (WebAssembly for PlantUML, workers, the app's inline styles), still limited to this origin.
 
 `scripts/postbuild.ts` moves the Mermaid diagrams' `<style>` elements into a stylesheet, puts the SHA-256 hashes of the
 remaining inline scripts (the theme script, which must run before the first paint, and Starlight's search shortcut) into
