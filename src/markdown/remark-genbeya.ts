@@ -395,11 +395,12 @@ export default function remarkGenbeya(options: RemarkGenbeyaOptions) {
 
       if (node.type === "paragraph") {
         const plain = plainParagraph(node);
-        if (plain === "[TOC]" || plain === "[[_TOC_]]") {
+        // `[[_TOC_]]` arrives as `[[`, emphasised `TOC`, `]]`.
+        if (plain === "[TOC]" || plain === "[[_TOC_]]" || plain === "[[TOC]]") {
           parent.children.splice(position, 1);
           return [SKIP, position];
         }
-        if (plain === "[SUBPAGES]" || plain === "[[_TOSP_]]") {
+        if (plain === "[SUBPAGES]" || plain === "[[_TOSP_]]" || plain === "[[TOSP]]") {
           parent.children.splice(position, 1, subpagesList(index, page));
           return [SKIP, position + 1];
         }

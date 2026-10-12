@@ -30,29 +30,19 @@ export type TaskTone = "idle" | "active" | "done" | "unknown";
 
 export const TASK_ID = /^[A-Z][A-Z0-9]*-\d+$/;
 
-/** Parses the inside of `[[…]]`; `\|` is a literal pipe, as inside tables. */
+/**
+ * Parses the inside of `[[…]]`. The first `|` starts the own text; inside tables it is written
+ * `\|`, which Markdown usually unescapes before this sees it — and which means the same here.
+ */
 export function parseReference(inner: string): ParsedReference {
-  const text = inner.trim();
-  const pipe = findUnescapedPipe(text);
-  const head = (pipe < 0 ? text : text.slice(0, pipe)).replace(/\\\|/g, "|").trim();
-  const label =
-    pipe < 0
-      ? undefined
-      : text
-          .slice(pipe + 1)
-          .replace(/\\\|/g, "|")
-          .trim() || undefined;
+  const text = inner.trim().replace(/\\\|/g, "|");
+  const pipe = text.indexOf("|");
+  const head = (pipe < 0 ? text : text.slice(0, pipe)).trim();
+  const label = pipe < 0 ? undefined : text.slice(pipe + 1).trim() || undefined;
   const hash = head.indexOf("#");
   const target = hash < 0 ? head : head.slice(0, hash).trim();
   const anchor = hash < 0 ? undefined : head.slice(hash + 1).trim() || undefined;
   return { target, ...(anchor ? { anchor } : {}), ...(label ? { label } : {}) };
-}
-
-function findUnescapedPipe(text: string): number {
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === "|" && text[i - 1] !== "\\") return i;
-  }
-  return -1;
 }
 
 /** `L10`, `L10-L20` or `L10-20` → the lines; anything else → undefined. */
