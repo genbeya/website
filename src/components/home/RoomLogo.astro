@@ -1,0 +1,357 @@
+---
+/**
+ * Genbeya's logo (branding/genbeya.svg), rebuilt as stacked layers so each part can move on
+ * its own: the left wall (a wiki page), the right wall (the task list), the back wall (the
+ * history, a branch) and the floor (the team). The geometry is the logo's, unchanged; it is
+ * split into one SVG per part, drawn in the original order, so at rest the stack looks exactly
+ * like the logo. A few extra details (a tick, an agent, the mono version, file cards) are
+ * hidden at rest and only appear during the scroll story.
+ *
+ * Each part has two wrappers: `.logo__layer` (moved by the scroll story) and `.logo__part`
+ * (moved by the intro), so the two animations never fight over the same transform.
+ * Colours are presentation attributes, not a stylesheet, so the page needs no inline <style>.
+ */
+const navy = { fill: "#22313d", stroke: "#22313d", "stroke-width": 12, "stroke-linejoin": "round" } as const;
+const accent = { fill: "#7c7ff2", stroke: "#7c7ff2", "stroke-width": 12, "stroke-linejoin": "round" } as const;
+const page = { fill: "#ffffff", stroke: "#ffffff", "stroke-width": 8, "stroke-linejoin": "round" } as const;
+const ink = { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" } as const;
+const svg = { viewBox: "0 0 512 512", "aria-hidden": "true", focusable: "false" } as const;
+
+const files = [
+  { name: "docs/Home.md", kind: "md", x: 14, y: 16 },
+  { name: "tasks/GENBEYA-12.md", kind: "md", x: 82, y: 12 },
+  { name: ".genbeya.yml", kind: "yml", x: 90, y: 50 },
+  { name: "docs/Guide/Wiki.md", kind: "md", x: 9, y: 56 },
+  { name: "AGENTS.md", kind: "md", x: 24, y: 90 },
+  { name: "src/app.ts", kind: "ts", x: 78, y: 88 },
+];
+
+const labels = [
+  { part: "wiki", text: "Wiki", x: 8, y: 14 },
+  { part: "history", text: "History", x: 50, y: -3 },
+  { part: "tasks", text: "Tasks", x: 92, y: 14 },
+  { part: "team", text: "Team", x: 50, y: 103 },
+];
+---
+
+<div class="logo" data-logo>
+  <div class="logo__glow" aria-hidden="true"></div>
+  <div class="logo__spot" aria-hidden="true" data-logo-spot></div>
+
+  <div class="logo__layer" data-layer="wiki">
+    <div class="logo__part" data-part="wiki">
+      <svg {...svg}>
+        <g id="gb-part-wiki" transform="matrix(1 -0.42 0 1 0 149.4)">
+          <rect {...navy} x="40" y="0" width="130" height="232" rx="4"></rect>
+          <rect {...page} x="58" y="18" width="94" height="196" rx="2"></rect>
+          <path {...ink} stroke="#7c7ff2" stroke-width="12" d="M76 54 H120" data-wiki-line></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M76 88 H134" data-wiki-line></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M76 112 H134" data-wiki-line></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M76 136 H134" data-wiki-line></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M76 160 H112" data-wiki-line></path>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="logo__layer" data-layer="tasks">
+    <div class="logo__part" data-part="tasks">
+      <svg {...svg}>
+        <g id="gb-part-tasks" transform="matrix(1 0.42 0 1 0 -65.64)">
+          <rect {...navy} x="342" y="0" width="130" height="232" rx="4"></rect>
+          <rect {...page} x="360" y="18" width="94" height="196" rx="2"></rect>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M374 72 l9 9 l15 -17" data-task-check></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M410 76 H438" data-task-line></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M374 118 l9 9 l15 -17" data-task-check></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M410 122 H438" data-task-line></path>
+          <path {...ink} stroke="#22313d" stroke-width="8" d="M410 168 H438" data-task-line></path>
+          <rect x="376" y="158" width="20" height="20" rx="5" fill="none" stroke="#22313d" stroke-width="6"></rect>
+          <path
+            {...ink}
+            stroke="#7c7ff2"
+            stroke-width="6"
+            d="M380.5 168 l4.5 4.5 l9 -10"
+            opacity="0"
+            data-task-done
+          ></path>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="logo__layer" data-layer="history">
+    <div class="logo__part" data-part="history">
+      <svg {...svg}>
+        <g id="gb-part-history">
+          <path {...accent} d="M196 64 L256 40 L316 64 L316 299 L256 274 L196 299 Z"></path>
+          <path {...ink} stroke="#ffffff" stroke-width="12" d="M234 98 V226" data-branch-line></path>
+          <path
+            {...ink}
+            stroke="#ffffff"
+            stroke-width="12"
+            d="M234 208 C234 180 280 184 280 150"
+            data-branch-line
+          ></path>
+          <circle cx="234" cy="96" r="16" fill="#ffffff" data-branch-node></circle>
+          <circle cx="280" cy="144" r="16" fill="#ffffff" data-branch-node></circle>
+          <circle cx="234" cy="230" r="16" fill="#ffffff" data-branch-node></circle>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="logo__layer" data-layer="team">
+    <div class="logo__part" data-part="team">
+      <svg {...svg}>
+        <g id="gb-part-team">
+          <path {...accent} d="M256 300 L472 391 L256 482 L40 391 Z"></path>
+          <g fill="#ffffff">
+            <g data-person>
+              <circle cx="188" cy="384" r="16"></circle>
+              <path d="M156 429 C156 411 169 402 188 402 C207 402 220 411 220 429 Z"></path>
+            </g>
+            <g data-person>
+              <circle cx="256" cy="350" r="18"></circle>
+              <path d="M220 401 C220 380 235 371 256 371 C277 371 292 380 292 401 Z"></path>
+            </g>
+            <g data-person>
+              <circle cx="324" cy="384" r="16"></circle>
+              <path d="M292 429 C292 411 305 402 324 402 C343 402 356 411 356 429 Z"></path>
+            </g>
+          </g>
+          <!-- An agent: shown only in the story's chapter about AI agents. -->
+          <path
+            d="M396 368 C398 382 402 386 416 388 C402 390 398 394 396 408 C394 394 390 390 376 388 C390 386 394 382 396 368 Z"
+            fill="#ffffff"
+            opacity="0"
+            data-agent
+          ></path>
+          <path
+            d="M120 372 C121 380 123 382 131 383 C123 384 121 386 120 394 C119 386 117 384 109 383 C117 382 119 380 120 372 Z"
+            fill="#ffffff"
+            opacity="0"
+            data-agent
+          ></path>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- The mono logo (branding/genbeya-mono.svg): "plain files, no lock-in". -->
+  <div class="logo__layer logo__mono" data-layer="mono">
+    <svg {...svg} fill="currentColor">
+      <defs>
+        <mask id="gb-mono-left">
+          <g transform="matrix(1 -0.42 0 1 0 149.4)">
+            <rect x="34" y="-6" width="142" height="244" rx="10" fill="#fff"></rect>
+            <rect x="54" y="14" width="102" height="204" rx="6" fill="#000"></rect>
+            <path
+              d="M76 54 H120 M76 88 H134 M76 112 H134 M76 136 H134 M76 160 H112"
+              stroke="#fff"
+              stroke-width="9"
+              stroke-linecap="round"
+            ></path>
+          </g>
+        </mask>
+        <mask id="gb-mono-right">
+          <g transform="matrix(1 0.42 0 1 0 -65.64)">
+            <rect x="336" y="-6" width="142" height="244" rx="10" fill="#fff"></rect>
+            <rect x="356" y="14" width="102" height="204" rx="6" fill="#000"></rect>
+            <path
+              d="M374 72 l9 9 l15 -17 M410 76 H438 M374 118 l9 9 l15 -17 M410 122 H438 M410 168 H438"
+              stroke="#fff"
+              stroke-width="8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            ></path>
+            <rect x="376" y="158" width="20" height="20" rx="5" fill="none" stroke="#fff" stroke-width="6"></rect>
+          </g>
+        </mask>
+        <mask id="gb-mono-back">
+          <path
+            d="M196 64 L256 40 L316 64 L316 299 L256 274 L196 299 Z"
+            fill="#fff"
+            stroke="#fff"
+            stroke-width="12"
+            stroke-linejoin="round"
+          ></path>
+          <g stroke="#000" fill="#000">
+            <path
+              d="M234 98 V226 M234 208 C234 180 280 184 280 150"
+              fill="none"
+              stroke-width="12"
+              stroke-linecap="round"
+            ></path>
+            <circle cx="234" cy="96" r="16"></circle>
+            <circle cx="234" cy="230" r="16"></circle>
+            <circle cx="280" cy="144" r="16"></circle>
+          </g>
+        </mask>
+        <mask id="gb-mono-floor">
+          <path
+            d="M256 300 L472 391 L256 482 L40 391 Z"
+            fill="#fff"
+            stroke="#fff"
+            stroke-width="12"
+            stroke-linejoin="round"
+          ></path>
+          <g fill="#000">
+            <circle cx="256" cy="350" r="18"></circle>
+            <path d="M220 401 C220 380 235 371 256 371 C277 371 292 380 292 401 Z"></path>
+            <circle cx="188" cy="384" r="16"></circle>
+            <path d="M156 429 C156 411 169 402 188 402 C207 402 220 411 220 429 Z"></path>
+            <circle cx="324" cy="384" r="16"></circle>
+            <path d="M292 429 C292 411 305 402 324 402 C343 402 356 411 356 429 Z"></path>
+          </g>
+        </mask>
+      </defs>
+      <g id="gb-mono">
+        <rect width="512" height="512" mask="url(#gb-mono-left)"></rect>
+        <rect width="512" height="512" mask="url(#gb-mono-right)"></rect>
+        <rect width="512" height="512" mask="url(#gb-mono-back)"></rect>
+        <rect width="512" height="512" mask="url(#gb-mono-floor)"></rect>
+      </g>
+    </svg>
+  </div>
+
+  <ul class="logo__labels" aria-hidden="true">
+    {labels.map((label) => (
+      <li class="logo__label" data-label={label.part} style={`--x:${label.x}%;--y:${label.y}%`}>
+        {label.text}
+      </li>
+    ))}
+  </ul>
+
+  <ul class="logo__files" aria-hidden="true">
+    {files.map((file) => (
+      <li class="logo__file" data-file data-kind={file.kind} style={`--x:${file.x}%;--y:${file.y}%`}>
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M4 1.5h5.5L13 5v9.5H4z" />
+          <path d="M9.5 1.5V5H13" />
+        </svg>
+        <span>{file.name}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .logo {
+    position: relative;
+    aspect-ratio: 1;
+    width: 100%;
+    color: var(--text);
+  }
+  .logo__glow,
+  .logo__spot {
+    position: absolute;
+    pointer-events: none;
+  }
+  .logo__glow {
+    inset: -18%;
+    background:
+      radial-gradient(closest-side at 50% 54%, var(--logo-glow), transparent 72%),
+      radial-gradient(closest-side at 62% 40%, var(--logo-glow-2), transparent 80%);
+    opacity: 0.75;
+  }
+  .logo__spot {
+    left: 0;
+    top: 0;
+    width: 46%;
+    aspect-ratio: 1;
+    margin: -23% 0 0 -23%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(124 127 242 / 0.6), transparent 75%);
+    opacity: 0;
+  }
+  :global(:root[data-theme="light"]) .logo__spot {
+    background: radial-gradient(closest-side, rgb(124 127 242 / 0.35), transparent 75%);
+  }
+  .logo__layer,
+  .logo__part {
+    position: absolute;
+    inset: 0;
+  }
+  .logo__layer svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  /* As in the app: a hairline lets the navy walls stand off a dark background. */
+  :global(:root[data-theme="dark"]) .logo__layer[data-layer="wiki"] svg,
+  :global(:root[data-theme="dark"]) .logo__layer[data-layer="tasks"] svg {
+    filter: drop-shadow(0 0 0.6px rgb(255 255 255 / 0.55));
+  }
+  .logo__mono {
+    color: var(--text);
+    opacity: 0;
+  }
+
+  .logo__labels,
+  .logo__files {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .logo__label,
+  .logo__file {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    translate: -50% -50%;
+    width: max-content;
+    opacity: 0;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .logo__label {
+    padding: 0.3rem 0.65rem;
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    color: var(--text);
+    font-size: clamp(0.6875rem, 1vw, 0.8125rem);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    box-shadow: var(--shadow-card);
+  }
+  .logo__file {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.6rem;
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: clamp(0.625rem, 0.95vw, 0.78125rem);
+    box-shadow: var(--shadow-pop);
+  }
+  .logo__file svg {
+    flex: none;
+    fill: none;
+    stroke: var(--accent-text);
+    stroke-width: 1.3;
+    stroke-linejoin: round;
+  }
+  @media (max-width: 47.99rem) {
+    .logo__file {
+      left: clamp(20%, var(--x), 80%);
+      gap: 0.3rem;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.625rem;
+    }
+    .logo__file svg {
+      width: 11px;
+      height: 11px;
+    }
+  }
+  .logo__file[data-kind="yml"] svg {
+    stroke: var(--amber);
+  }
+  .logo__file[data-kind="ts"] svg {
+    stroke: #4fa6e8;
+  }
+</style>

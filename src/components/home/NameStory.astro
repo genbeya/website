@@ -1,0 +1,142 @@
+---
+/** "Why Genbeya?": the name, from lean manufacturing's genba and obeya. */
+---
+
+<section class="section name" id="why-genbeya" aria-labelledby="name-title">
+  <div class="container">
+    <header class="section-head name__head" data-reveal>
+      <p class="eyebrow">Why Genbeya?</p>
+      <h2 id="name-title">The big room, at the real place</h2>
+      <p>The name joins two words from lean manufacturing.</p>
+    </header>
+
+    <div class="name__equation">
+      <article class="word" data-reveal lang="en">
+        <p class="word__kanji" lang="ja">
+          <ruby>
+            現場<rp>(</rp>
+            <rt>genba</rt>
+            <rp>)</rp>
+          </ruby>
+        </p>
+        <h3>
+          genba <span>— “the real place”</span>
+        </h3>
+        <p>
+          Where value is actually created. Lean's advice is to go to the genba and see for yourself, instead of reading
+          reports somewhere else.
+        </p>
+      </article>
+
+      <span class="name__op" aria-hidden="true">
+        +
+      </span>
+
+      <article class="word" data-reveal lang="en">
+        <p class="word__kanji" lang="ja">
+          <ruby>
+            大部屋<rp>(</rp>
+            <rt>obeya</rt>
+            <rp>)</rp>
+          </ruby>
+        </p>
+        <h3>
+          obeya <span>— “big room”</span>
+        </h3>
+        <p>The project room, where plans, tasks, problems and status hang on the walls for everyone to see.</p>
+      </article>
+    </div>
+
+    <p class="name__result" data-reveal>
+      <strong>Genbeya</strong> is the big room at the real place: everything about a project — docs, tasks, decisions,
+      code and history — kept right where the work happens, in the repository. Versioned, reviewable, and open to every
+      tool and person that can read files.
+      <span class="name__say">Say it “gen-BEH-ya”.</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .name__head {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .name__head .eyebrow {
+    justify-content: center;
+  }
+  .name__equation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    max-width: 62rem;
+    margin-inline: auto;
+  }
+  .word {
+    height: 100%;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: radial-gradient(24rem 14rem at 50% 0%, rgb(124 127 242 / 0.1), transparent 70%), var(--surface);
+    text-align: center;
+  }
+  .word__kanji {
+    margin: 0 0 1.25rem;
+    color: var(--text);
+    font-family: var(--font-jp);
+    font-size: clamp(3.25rem, 7vw, 5.25rem);
+    font-weight: 500;
+    line-height: 1.25;
+  }
+  .word__kanji rt {
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+    font-size: 0.17em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .word h3 {
+    font-size: 1.25rem;
+  }
+  .word h3 span {
+    color: var(--text-2);
+    font-weight: 450;
+  }
+  .word p:last-child {
+    margin: 0.75rem auto 0;
+    max-width: 24rem;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+  }
+  .name__op {
+    color: var(--accent-text);
+    font-size: 2.5rem;
+    font-weight: 300;
+  }
+  .name__result {
+    max-width: 44rem;
+    margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+    color: var(--text-2);
+    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+    line-height: 1.7;
+    text-align: center;
+  }
+  .name__result strong {
+    color: var(--text);
+  }
+  .name__say {
+    display: block;
+    margin-top: 1rem;
+    color: var(--text-3);
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 47.99rem) {
+    .name__equation {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .name__op {
+      justify-self: center;
+    }
+  }
+</style>

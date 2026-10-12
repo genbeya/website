@@ -1,0 +1,76 @@
+---
+import LogoMark from "../LogoMark.astro";
+---
+
+<section class="section cta" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta__panel" data-reveal>
+      <div class="cta__glow" aria-hidden="true"></div>
+      <LogoMark size={48} class="cta__mark" />
+      <h2 id="cta-title">Bring your project into the room.</h2>
+      <p>Open a repository you already have. Nothing to set up, nothing to sign up for, nothing to migrate back out.</p>
+      <div class="cta__actions">
+        <a class="button button--primary button--large" href="/try/">
+          Try it in your browser
+        </a>
+        <a class="button button--large" href="/download/">
+          Download
+        </a>
+        <a class="button button--large cta__docs" href="/docs/getting-started/">
+          Read the guide
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-top: 0;
+  }
+  .cta__panel {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    justify-items: center;
+    padding: clamp(3rem, 8vw, 6rem) clamp(1.25rem, 5vw, 4rem);
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-xl);
+    background: linear-gradient(180deg, rgb(124 127 242 / 0.08), transparent 60%), var(--surface);
+    text-align: center;
+  }
+  .cta__glow {
+    position: absolute;
+    inset: -40% 10% auto;
+    z-index: -1;
+    height: 120%;
+    background: radial-gradient(closest-side, rgb(124 127 242 / 0.35), transparent 70%);
+  }
+  .cta__panel :global(.cta__mark) {
+    margin-bottom: 1.5rem;
+  }
+  h2 {
+    max-width: 40rem;
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+  p {
+    max-width: 34rem;
+    margin: 1.25rem 0 0;
+    color: var(--text-2);
+    font-size: clamp(1rem, 1.4vw, 1.1875rem);
+  }
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+  .cta__docs {
+    --button-bg: transparent;
+    --button-border: transparent;
+  }
+</style>

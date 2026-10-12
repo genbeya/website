@@ -1,0 +1,754 @@
+---
+/**
+ * The hero and the scroll story. Without JavaScript or with reduced motion, it is a hero and a
+ * list of chapters, each with a still picture of the part of the logo it is about. With motion,
+ * story.ts pins the stage and scrubs a timeline through the chapters as the visitor scrolls.
+ */
+import RoomLogo from "./RoomLogo.astro";
+import { chapters, STORY_STEPS, type StoryPart } from "./story";
+
+const parts: Record<StoryPart, string[]> = {
+  room: ["wiki", "tasks", "history", "team"],
+  wiki: ["wiki"],
+  history: ["history"],
+  tasks: ["tasks"],
+  team: ["team"],
+  files: [],
+};
+const allParts = ["wiki", "tasks", "history", "team"];
+---
+
+<section
+  class="story"
+  id="story"
+  data-story
+  data-chapter="0"
+  style={`--steps:${STORY_STEPS}`}
+  aria-label="What Genbeya is"
+>
+  <div class="story__stage">
+    <div class="story__backdrop" aria-hidden="true"></div>
+
+    <div class="story__visual">
+      <div
+        class="story__logo"
+        role="img"
+        aria-label="Genbeya's logo: a project room with a wiki page, a branch and a task list on its walls, and the team on its floor."
+      >
+        <RoomLogo />
+      </div>
+    </div>
+
+    <div class="story__copy">
+      <header class="story__hero" data-hero>
+        <p class="eyebrow">Docs · Tasks · Decisions · Code</p>
+        <h1>
+          <span class="story__line">Your whole project,</span>{" "}
+          <span class="story__line story__accent">in the repository.</span>
+        </h1>
+        <p class="story__lead">
+          Genbeya puts your whole project — docs, tasks, decisions and code — into the Git repository, as plain files
+          you can version, review and use anywhere.
+        </p>
+        <div class="story__actions">
+          <a class="button button--primary button--large" href="/try/">
+            Try it in your browser
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+              <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" />
+            </svg>
+          </a>
+          <a class="button button--large" href="/download/">
+            Download
+          </a>
+        </div>
+        <p class="story__platforms">Windows · macOS · Linux — no account, no server</p>
+      </header>
+
+      <ol class="story__chapters">
+        {chapters.map((chapter, i) => (
+          <li class="chapter" id={`chapter-${chapter.id}`} data-chapter-index={i + 1} data-part={chapter.part}>
+            <svg class="chapter__figure" viewBox="0 0 512 512" aria-hidden="true">
+              {chapter.part === "files" ? (
+                <use href="#gb-mono" class="chapter__mono" />
+              ) : (
+                allParts.map((part) => (
+                  <use href={`#gb-part-${part}`} class:list={{ "is-dim": !parts[chapter.part].includes(part) }} />
+                ))
+              )}
+            </svg>
+            <div class="chapter__text">
+              <p class="eyebrow">
+                <span class="chapter__number">{String(i + 1).padStart(2, "0")}</span> {chapter.eyebrow}
+              </p>
+              <h2>{chapter.title}</h2>
+              <p class="chapter__body">{chapter.body}</p>
+
+              {chapter.id === "docs" && (
+                <div class="chapter__extra demo-ref" data-extra>
+                  <code class="demo-ref__source">[[GENBEYA-12]]</code>
+                  <svg class="demo-ref__arrow" viewBox="0 0 24 12" aria-hidden="true">
+                    <path d="M1 6h20M16 1.5 21 6l-5 4.5" />
+                  </svg>
+                  <span class="demo-ref__chip">
+                    <span class="demo-ref__dot" />
+                    <span class="demo-ref__id">GENBEYA-12</span>
+                    Virtualize long lists
+                    <span class="demo-ref__status">In progress</span>
+                  </span>
+                </div>
+              )}
+              {chapter.id === "history" && (
+                <ul class="chapter__extra demo-log" data-extra aria-label="A few commits">
+                  <li>
+                    <code>a3f9c1e</code> Document the release flow <span>docs</span>
+                  </li>
+                  <li>
+                    <code>7b2e0d4</code> GENBEYA-12: Virtualize the file tree <span>tasks</span>
+                  </li>
+                  <li>
+                    <code>e91c5a2</code> Decide on plain files for settings <span>decision</span>
+                  </li>
+                </ul>
+              )}
+              {chapter.id === "tasks" && (
+                <div class="chapter__extra demo-file" data-extra>
+                  <span class="demo-file__name">tasks/GENBEYA-12.md</span>
+                  <code>
+                    <span class="line t-punct">---</span>
+                    <span class="line">
+                      <span class="t-key">id</span>: GENBEYA-12
+                    </span>
+                    <span class="line">
+                      <span class="t-key">title</span>: Virtualize long lists
+                    </span>
+                    <span class="line">
+                      <span class="t-key">status</span>: <span class="t-val">in-progress</span>
+                    </span>
+                    <span class="line">
+                      <span class="t-key">labels</span>: [performance]
+                    </span>
+                    <span class="line t-punct">---</span>
+                  </code>
+                </div>
+              )}
+              {chapter.id === "team" && (
+                <ul class="chapter__extra demo-agents" data-extra aria-label="Agents Genbeya teaches">
+                  <li>Claude Code</li>
+                  <li>Codex</li>
+                  <li>Copilot</li>
+                  <li>Cursor</li>
+                  <li class="demo-agents__file">AGENTS.md</li>
+                </ul>
+              )}
+              {chapter.id === "no-lock-in" && (
+                <div class="chapter__extra story__actions" data-extra>
+                  <a class="button button--primary button--large" href="/try/">
+                    Try it in your browser
+                  </a>
+                  <a class="button button--large" href="/download/">
+                    Download
+                  </a>
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <nav class="story__rail" aria-label="Story chapters">
+      <ol>
+        {chapters.map((chapter, i) => (
+          <li>
+            <a href={`#chapter-${chapter.id}`} data-rail={i + 1}>
+              <span class="story__rail-dot" aria-hidden="true" />
+              <span class="story__rail-label">{chapter.short}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <div class="story__progress" aria-hidden="true">
+      <span data-progress></span>
+    </div>
+    <p class="story__hint" aria-hidden="true" data-hint>
+      <span>Scroll</span>
+      <svg viewBox="0 0 16 24" width="14" height="20">
+        <rect x="1.5" y="1.5" width="13" height="21" rx="6.5" />
+        <path d="M8 6v4" />
+      </svg>
+    </p>
+  </div>
+</section>
+
+<script>
+  import { initStory } from "../../scripts/story";
+  initStory();
+</script>
+
+<style>
+  .story {
+    --step: 85svh;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* ---------- The stage: hero and visual ---------- */
+  .story__stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-areas:
+      "hero visual"
+      "chapters chapters";
+    column-gap: clamp(2rem, 5vw, 5rem);
+    max-width: var(--content);
+    margin-inline: auto;
+    padding: calc(var(--nav-height) + clamp(2rem, 6vh, 5rem)) var(--gutter) 0;
+  }
+  .story__backdrop {
+    position: absolute;
+    inset: 0 calc(50% - 50vw);
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 40rem at 72% 30%, rgb(124 127 242 / 0.12), transparent 70%),
+      radial-gradient(40rem 30rem at 10% 80%, rgb(98 160 255 / 0.05), transparent 70%);
+  }
+  .story__backdrop::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: center top;
+    mask-image: radial-gradient(70rem 46rem at 70% 32%, #000 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(70rem 46rem at 70% 32%, #000 0%, transparent 70%);
+    opacity: 0.55;
+  }
+
+  .story__copy {
+    display: contents;
+  }
+  .story__hero {
+    grid-area: hero;
+    align-self: center;
+    padding-block: 2rem;
+  }
+  .story__visual {
+    grid-area: visual;
+    align-self: center;
+    display: grid;
+    place-items: center;
+  }
+  .story__logo {
+    width: min(100%, 36rem);
+    padding: 7%;
+  }
+
+  .story__line {
+    display: inline-block;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 4.3vw, 3.95rem);
+    font-weight: 680;
+    letter-spacing: -0.045em;
+    line-height: 1.02;
+  }
+  .story__accent {
+    background: linear-gradient(100deg, var(--text) 10%, var(--accent-text) 60%, #9fc2ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .story__lead {
+    max-width: 34rem;
+    margin: 1.5rem 0 0;
+    color: var(--text-2);
+    font-size: clamp(1.0625rem, 1.45vw, 1.25rem);
+    line-height: 1.6;
+  }
+  .story__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+  .story__actions svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .story__platforms {
+    margin: 1.25rem 0 0;
+    color: var(--text-3);
+    font-size: 0.8125rem;
+  }
+
+  /* ---------- Chapters, as a list (no motion) ---------- */
+  .story__chapters {
+    grid-area: chapters;
+    display: grid;
+    gap: clamp(4rem, 9vw, 7rem);
+    margin: 0;
+    padding: clamp(5rem, 10vw, 8rem) 0 clamp(3rem, 6vw, 5rem);
+    list-style: none;
+  }
+  .chapter {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 6vw, 6rem);
+  }
+  .chapter:nth-child(even) .chapter__figure {
+    order: 2;
+  }
+  .chapter__figure {
+    width: min(100%, 22rem);
+    justify-self: center;
+    overflow: visible;
+  }
+  .chapter__figure .is-dim {
+    opacity: 0.18;
+  }
+  .chapter__mono {
+    color: var(--text);
+  }
+  .chapter h2 {
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    letter-spacing: -0.04em;
+    line-height: 1.06;
+  }
+  .chapter__body {
+    max-width: 34rem;
+    margin: 1.25rem 0 0;
+    color: var(--text-2);
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.65;
+  }
+  .chapter__number {
+    color: var(--text-3);
+  }
+  .chapter__extra {
+    margin-top: 1.75rem;
+  }
+
+  .story__rail,
+  .story__progress,
+  .story__hint {
+    display: none;
+  }
+
+  /* ---------- Demo snippets ---------- */
+  .demo-ref {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .demo-ref__source {
+    padding: 0.35rem 0.6rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: 0.5rem;
+    color: var(--text-2);
+    font-size: 0.8125rem;
+  }
+  .demo-ref__arrow {
+    width: 1.5rem;
+    fill: none;
+    stroke: var(--text-3);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .demo-ref__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.55rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    font-size: 0.875rem;
+    font-weight: 550;
+  }
+  .demo-ref__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+  .demo-ref__id {
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+  .demo-ref__status {
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--amber) 16%, transparent);
+    color: var(--amber);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .demo-log {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 30rem;
+    padding: 0;
+    list-style: none;
+  }
+  .demo-log li {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--surface) 80%, transparent);
+    font-size: 0.875rem;
+  }
+  .demo-log code {
+    color: var(--accent-text);
+    font-size: 0.75rem;
+  }
+  .demo-log span {
+    margin-left: auto;
+    padding: 0.05rem 0.45rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--text-3);
+    font-size: 0.6875rem;
+  }
+
+  .demo-file {
+    max-width: 22rem;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+  .demo-file__name {
+    display: block;
+    padding: 0.45rem 0.85rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-3);
+    font-size: 0.75rem;
+  }
+  .demo-file code {
+    display: block;
+    padding: 0.65rem 0.85rem;
+    font-size: inherit;
+  }
+  .demo-file .line {
+    display: block;
+    white-space: pre;
+  }
+  .t-key {
+    color: var(--accent-text);
+  }
+  .t-val {
+    color: var(--amber);
+  }
+  .t-punct {
+    color: var(--text-3);
+  }
+
+  .demo-agents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+  .demo-agents li {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.8125rem;
+    font-weight: 550;
+  }
+  .demo-agents__file {
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 47.99rem) {
+    .story__stage {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "visual"
+        "hero"
+        "chapters";
+      padding-top: calc(var(--nav-height) + 1rem);
+    }
+    .story__logo {
+      width: min(80vw, 22rem);
+    }
+    .story__hero {
+      padding-block: 0.5rem 0;
+    }
+    .chapter {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .chapter:nth-child(even) .chapter__figure {
+      order: 0;
+    }
+    .chapter__figure {
+      width: min(60vw, 14rem);
+    }
+  }
+
+  /* ---------- The scroll story (scripted, motion allowed) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .story {
+      height: calc(100svh + (var(--steps) - 1) * var(--step) + 30svh);
+    }
+    :global(.js) .story__stage {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      grid-template-areas: "copy visual";
+      grid-template-rows: minmax(0, 1fr);
+      padding-bottom: clamp(1rem, 4vh, 3rem);
+      max-width: none;
+      padding-inline: max(var(--gutter), calc((100vw - var(--content)) / 2 + var(--gutter)));
+    }
+    :global(.js) .story__copy {
+      grid-area: copy;
+      display: grid;
+      align-self: center;
+    }
+    :global(.js) .story__hero,
+    :global(.js) .chapter {
+      grid-area: 1 / 1;
+    }
+    :global(.js) .story__chapters {
+      display: contents;
+    }
+    :global(.js) .chapter {
+      display: block;
+      align-self: center;
+      opacity: 0;
+      visibility: hidden;
+    }
+    :global(.js) .chapter__figure {
+      display: none;
+    }
+    :global(.js) .story__hero {
+      padding-block: 0;
+    }
+
+    :global(.js) .story__logo {
+      will-change: transform;
+    }
+    :global(.js) .story__logo :global(.logo__layer),
+    :global(.js) .story__logo :global(.logo__part) {
+      will-change: transform, opacity;
+    }
+    /* The intro builds the logo; until the script runs, the parts wait. A fallback shows them
+       anyway if it never does. */
+    :global(.js) .story:not(.is-live) :global(.logo__part) {
+      opacity: 0;
+      animation: story-fallback 0.6s 2.5s forwards;
+    }
+    @keyframes story-fallback {
+      to {
+        opacity: 1;
+      }
+    }
+
+    :global(.js) .story__rail {
+      position: absolute;
+      top: 50%;
+      right: clamp(0.75rem, 2vw, 2rem);
+      display: block;
+      translate: 0 -50%;
+    }
+    :global(.js) .story__rail ol {
+      display: grid;
+      gap: 0.25rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    :global(.js) .story__rail a {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.4rem 0.25rem;
+      color: var(--text-3);
+      font-size: 0.75rem;
+      font-weight: 550;
+      text-decoration: none;
+      border-radius: var(--radius-s);
+    }
+    :global(.js) .story__rail-label {
+      opacity: 0;
+      translate: 0.5rem 0;
+      transition:
+        opacity 0.3s var(--ease-out),
+        translate 0.3s var(--ease-out);
+    }
+    :global(.js) .story__rail-dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: var(--line-strong);
+      transition:
+        background-color 0.3s,
+        scale 0.3s var(--ease-out);
+    }
+    :global(.js) .story__rail:hover .story__rail-label,
+    :global(.js) .story__rail a:focus-visible .story__rail-label,
+    :global(.js) .story__rail a[aria-current="step"] .story__rail-label {
+      opacity: 1;
+      translate: 0 0;
+    }
+    :global(.js) .story__rail a[aria-current="step"] {
+      color: var(--text);
+    }
+    :global(.js) .story__rail a[aria-current="step"] .story__rail-dot {
+      background: var(--accent);
+      scale: 1.5;
+    }
+
+    :global(.js) .story__hint {
+      position: absolute;
+      left: 50%;
+      bottom: clamp(1rem, 3vh, 2rem);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      color: var(--text-3);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      translate: -50% 0;
+    }
+    :global(.js) .story__hint svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.4;
+      stroke-linecap: round;
+    }
+    :global(.js) .story__hint path {
+      animation: hint 1.8s var(--ease-in-out) infinite;
+    }
+    @keyframes hint {
+      0%,
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      60% {
+        transform: translateY(5px);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 47.99rem) {
+      :global(.js) .story {
+        --step: 80svh;
+      }
+      :global(.js) .story__stage {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        grid-template-areas:
+          "visual"
+          "copy";
+        row-gap: 0.5rem;
+        padding-top: calc(var(--nav-height) + 0.75rem);
+        padding-bottom: calc(var(--notice-room, 0px) + 1rem);
+      }
+      :global(.js) .story__visual {
+        align-self: stretch;
+        min-height: 0;
+      }
+      :global(.js) .story__logo {
+        width: auto;
+        height: 100%;
+        max-width: 88vw;
+        aspect-ratio: 1;
+        padding: 6%;
+      }
+      :global(.js) .story__copy {
+        align-self: start;
+      }
+      :global(.js) .story__hero h1 {
+        font-size: clamp(2rem, 9vw, 2.6rem);
+      }
+      :global(.js) .story__lead {
+        margin-top: 0.9rem;
+        font-size: 1rem;
+      }
+      :global(.js) .story__actions {
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+      }
+      :global(.js) .story__actions .button {
+        min-height: 2.75rem;
+        padding: 0.65rem 0.95rem;
+        font-size: 0.9375rem;
+      }
+      :global(.js) .story__platforms {
+        display: none;
+      }
+      :global(.js) .chapter h2 {
+        font-size: clamp(1.6rem, 7.4vw, 2rem);
+      }
+      :global(.js) .chapter__body {
+        margin-top: 0.75rem;
+        font-size: 0.96875rem;
+        line-height: 1.6;
+      }
+      :global(.js) .chapter .eyebrow {
+        margin-bottom: 0.6rem;
+      }
+      :global(.js) .chapter__extra:not(.story__actions) {
+        display: none;
+      }
+      :global(.js) .story__rail,
+      :global(.js) .story__hint {
+        display: none;
+      }
+      :global(.js) .story__progress {
+        position: absolute;
+        top: var(--nav-height);
+        left: 0;
+        right: 0;
+        display: block;
+        height: 2px;
+        background: var(--line);
+      }
+      :global(.js) .story__progress span {
+        display: block;
+        height: 100%;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+    }
+
+    @media (max-height: 40rem) and (min-width: 48rem) {
+      :global(.js) .chapter__extra:not(.story__actions) {
+        display: none;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,233 @@
+---
+/** The vision: one repository, many frontends, no lock-in. */
+interface Frontend {
+  title: string;
+  body: string;
+  status: "available" | "planned";
+}
+
+const left: Frontend[] = [
+  { title: "Desktop app", body: "Windows, macOS and Linux — Electron, Tauri or Deno Desktop.", status: "available" },
+  {
+    title: "VS Code extension",
+    body: "The wiki and the board next to your code, in the editor you use.",
+    status: "planned",
+  },
+  {
+    title: "MCP server",
+    body: "AI agents read and update pages and tasks through the Model Context Protocol.",
+    status: "planned",
+  },
+];
+const right: Frontend[] = [
+  { title: "In your browser", body: "The whole app as a demo that runs in the page.", status: "available" },
+  {
+    title: "Forge plugins",
+    body: "GitHub, GitLab, Gitea and Bitbucket: references and boards where you review code.",
+    status: "planned",
+  },
+  {
+    title: "Any editor or script",
+    body: "It's Markdown and YAML. grep, sed, your editor and your agent already work.",
+    status: "available",
+  },
+];
+---
+
+<section class="section vision" id="vision" aria-labelledby="vision-title">
+  <div class="container">
+    <header class="section-head vision__head" data-reveal>
+      <p class="eyebrow">Where it's going</p>
+      <h2 id="vision-title">One repository, many frontends, no lock-in</h2>
+      <p>
+        The files are the product. The desktop app is the first way to work with them — not the only one, and never a
+        place your project is locked into.
+      </p>
+    </header>
+
+    <div class="hub">
+      <svg class="hub__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M50 50 L17 17 M50 50 L17 50 M50 50 L17 83 M50 50 L83 17 M50 50 L83 50 M50 50 L83 83"></path>
+      </svg>
+
+      <div class="hub__column">
+        {left.map((item) => (
+          <article class="frontend" data-reveal>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+            <span class:list={["status", `status--${item.status}`]}>
+              {item.status === "available" ? "Available" : "Planned"}
+            </span>
+          </article>
+        ))}
+      </div>
+
+      <div class="hub__center" data-reveal>
+        <div class="repo">
+          <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+            <path d="M6 7.5v9M18 9.5c0 4.5-12 2.5-12 7M6 2.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM6 16.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM18 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"></path>
+          </svg>
+          <h3>Your repository</h3>
+          <ul aria-label="What it holds">
+            <li>docs/</li>
+            <li>tasks/</li>
+            <li>.genbeya.yml</li>
+            <li>src/</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hub__column">
+        {right.map((item) => (
+          <article class="frontend" data-reveal>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+            <span class:list={["status", `status--${item.status}`]}>
+              {item.status === "available" ? "Available" : "Planned"}
+            </span>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .vision__head {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .vision__head .eyebrow {
+    justify-content: center;
+  }
+  .hub {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 4rem);
+  }
+  .hub__lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  .hub__lines path {
+    fill: none;
+    stroke: var(--accent-line);
+    stroke-width: 1;
+    stroke-dasharray: 4 5;
+    vector-effect: non-scaling-stroke;
+  }
+  .hub__column {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .frontend {
+    position: relative;
+    padding: 1.25rem 1.25rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+  .frontend h3 {
+    font-size: 1.0625rem;
+    letter-spacing: -0.015em;
+  }
+  .frontend p {
+    margin: 0.4rem 0 0.9rem;
+    color: var(--text-2);
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.71875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .status::before {
+    content: "";
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .status--available {
+    background: color-mix(in srgb, var(--green) 14%, transparent);
+    color: var(--green);
+  }
+  .status--planned {
+    border: 1px dashed var(--accent-line);
+    color: var(--accent-text);
+  }
+
+  .hub__center {
+    display: grid;
+    place-items: center;
+  }
+  .repo {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 17rem;
+    padding: 2rem 1.5rem;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-xl);
+    background: radial-gradient(18rem 12rem at 50% 0%, rgb(124 127 242 / 0.25), transparent 70%), var(--surface);
+    box-shadow:
+      0 0 0 6px var(--accent-soft),
+      0 30px 80px -20px rgb(124 127 242 / 0.45);
+    text-align: center;
+  }
+  .repo svg {
+    fill: none;
+    stroke: var(--accent-text);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .repo h3 {
+    font-size: 1.25rem;
+  }
+  .repo ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .repo li {
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.4rem;
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 63.99rem) {
+    .hub {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .hub__lines {
+      display: none;
+    }
+    .hub__center {
+      order: -1;
+    }
+    .repo {
+      max-width: none;
+    }
+  }
+</style>

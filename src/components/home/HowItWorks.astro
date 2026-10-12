@@ -1,0 +1,254 @@
+---
+/** "How it works": a repository's tree, and what Genbeya does with it. */
+interface Row {
+  depth: number;
+  name: string;
+  note?: string;
+  kind: "folder" | "file" | "settings";
+  highlight?: boolean;
+  last?: boolean[];
+}
+
+// `last` marks, per level, whether the row is the last of its folder (for the tree lines).
+const rows: Row[] = [
+  { depth: 0, name: "pocket-weather/", kind: "folder" },
+  { depth: 1, name: ".genbeya.yml", note: "settings, for the whole team", kind: "settings", highlight: true },
+  { depth: 1, name: "AGENTS.md", note: "how agents work here", kind: "file" },
+  { depth: 1, name: "docs/", note: "the wiki", kind: "folder", highlight: true },
+  { depth: 2, name: "Home.md", kind: "file" },
+  { depth: 2, name: "Architecture.md", kind: "file" },
+  { depth: 2, name: "Architecture/Forecast-source.md", kind: "file", last: [false, true] },
+  { depth: 1, name: "tasks/", note: "one file per task", kind: "folder", highlight: true },
+  { depth: 2, name: "PW-1.md", kind: "file" },
+  { depth: 2, name: "PW-2.md", kind: "file", last: [false, true] },
+  { depth: 1, name: "src/", note: "your code, as always", kind: "folder", last: [true] },
+];
+
+const steps = [
+  {
+    title: "Open any Git repository",
+    body: "On this computer, in WSL or over SSH. No setup: the wiki is docs/ and the tasks are tasks/ until you say otherwise.",
+  },
+  {
+    title: "Write, plan and code",
+    body: "Genbeya saves what you do as Markdown and YAML. Everything it shows is a file you could have written yourself.",
+  },
+  {
+    title: "Commit, review, push",
+    body: "Docs and tasks travel with the code: in the same commits, through the same pull requests, to any Git host.",
+  },
+];
+
+const prefix = (row: Row) => {
+  if (row.depth === 0) return "";
+  const parts: string[] = [];
+  for (let level = 1; level < row.depth; level++) parts.push(row.last?.[level - 1] ? "   " : "│  ");
+  parts.push(row.last?.[row.depth - 1] ? "└─ " : "├─ ");
+  return parts.join("");
+};
+---
+
+<section class="section how" id="how-it-works" aria-labelledby="how-title">
+  <div class="container how__grid">
+    <div class="how__intro">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-title">It's your repository. Genbeya just furnishes the room.</h2>
+        <p>
+          There is no database to set up and nothing to export. Genbeya reads and writes plain files in the repository
+          you already have.
+        </p>
+      </header>
+      <ol class="steps">
+        {steps.map((step, i) => (
+          <li data-reveal>
+            <span class="steps__number" aria-hidden="true">
+              {i + 1}
+            </span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <figure class="tree" data-reveal aria-label="A repository with Genbeya: settings, the wiki in docs, tasks and code">
+      <div class="tree__bar" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <p>pocket-weather — main</p>
+      </div>
+      <ul class="tree__rows">
+        {rows.map((row) => (
+          <li class:list={["tree__row", `tree__row--${row.kind}`, { "is-highlight": row.highlight }]}>
+            <span class="tree__lines" aria-hidden="true">
+              {prefix(row)}
+            </span>
+            <span class="tree__name">{row.name}</span>
+            {row.note && <span class="tree__note">{row.note}</span>}
+          </li>
+        ))}
+      </ul>
+      <div class="tree__file">
+        <p class="tree__file-name">.genbeya.yml</p>
+        <pre><code><span class="k">name</span>: Pocket Weather
+<span class="k">taskPrefix</span>: PW
+<span class="k">statuses</span>: [todo, in-progress, review, done]</code></pre>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .how {
+    border-block: 1px solid var(--line);
+    background: radial-gradient(50rem 30rem at 85% 50%, rgb(124 127 242 / 0.08), transparent 70%), var(--bg-2);
+  }
+  .how__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 6rem);
+  }
+  .steps {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .steps li {
+    display: flex;
+    gap: 1rem;
+  }
+  .steps__number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--accent-line);
+    border-radius: 50%;
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+  .steps h3 {
+    font-size: 1.0625rem;
+    letter-spacing: -0.015em;
+    line-height: 2rem;
+  }
+  .steps p {
+    margin: 0.25rem 0 0;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+  }
+
+  .tree {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+    box-shadow: var(--shadow-pop);
+    font-family: var(--font-mono);
+    font-size: clamp(0.75rem, 1.1vw, 0.84375rem);
+  }
+  .tree__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .tree__bar span {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+  .tree__bar p {
+    margin: 0 0 0 0.6rem;
+    color: var(--text-3);
+    font-size: 0.75rem;
+  }
+  .tree__rows {
+    margin: 0;
+    padding: 0.75rem 0;
+    list-style: none;
+  }
+  .tree__row {
+    display: flex;
+    align-items: baseline;
+    padding: 0.2rem 1.25rem;
+    white-space: pre;
+    line-height: 1.6;
+  }
+  .tree__row.is-highlight {
+    background: linear-gradient(90deg, var(--accent-soft), transparent 80%);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+  .tree__lines {
+    color: var(--text-3);
+  }
+  .tree__row--folder .tree__name {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .tree__row--file .tree__name {
+    color: var(--text-2);
+  }
+  .tree__row--settings .tree__name {
+    color: var(--amber);
+  }
+  .tree__note {
+    margin-left: auto;
+    padding-left: 1.5rem;
+    overflow: hidden;
+    color: var(--text-3);
+    font-family: var(--font-ui);
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+  }
+  .is-highlight .tree__note {
+    color: var(--accent-text);
+  }
+  .tree__file {
+    border-top: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+  .tree__file-name {
+    margin: 0;
+    padding: 0.6rem 1.25rem 0;
+    color: var(--text-3);
+    font-size: 0.75rem;
+  }
+  .tree__file pre {
+    margin: 0;
+    padding: 0.5rem 1.25rem 1rem;
+    overflow-x: auto;
+    color: var(--text-2);
+    font-size: inherit;
+    line-height: 1.7;
+  }
+  .tree__file code {
+    font-size: inherit;
+  }
+  .k {
+    color: var(--accent-text);
+  }
+
+  @media (max-width: 63.99rem) {
+    .how__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 29.99rem) {
+    .tree__note {
+      display: none;
+    }
+  }
+</style>
