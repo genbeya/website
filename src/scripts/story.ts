@@ -77,6 +77,16 @@ function spotState(step: number): { xPercent: number; yPercent: number; opacity:
   return { xPercent: x / 0.46, yPercent: y / 0.46, opacity: part ? 1 : 0 };
 }
 
+/** Runs `callback` once the browser is idle (or after a short delay where it can't tell); returns a cancel function. */
+function whenIdle(callback: () => void): () => void {
+  if (typeof window.requestIdleCallback === "function") {
+    const id = window.requestIdleCallback(callback, { timeout: 1200 });
+    return () => window.cancelIdleCallback(id);
+  }
+  const id = globalThis.setTimeout(callback, 300);
+  return () => globalThis.clearTimeout(id);
+}
+
 export function initStory(): void {
   const story = document.querySelector<HTMLElement>("[data-story]");
   if (!story) return;
@@ -171,11 +181,10 @@ function build(story: HTMLElement, context: gsap.Context): () => void {
     cancelIdle();
     if (!stopStory) context.add(() => (stopStory = scrollStory()));
   };
-  const idle =
-    "requestIdleCallback" in window ? requestIdleCallback(startStory, { timeout: 1200 }) : setTimeout(startStory, 300);
+  // Safari has no requestIdleCallback; each way keeps its own way of cancelling.
+  const cancelWait = whenIdle(startStory);
   const cancelIdle = () => {
-    if ("cancelIdleCallback" in window) cancelIdleCallback(idle);
-    else clearTimeout(idle);
+    cancelWait();
     window.removeEventListener("scroll", startStory);
     story.removeEventListener("focusin", startStory);
   };
