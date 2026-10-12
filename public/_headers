@@ -1,4 +1,4 @@
-# Security headers for Cloudflare Pages. The build (scripts/postbuild.ts) fills in the
+# Security headers, which Cloudflare applies to the static assets. The build (scripts/postbuild.ts) fills in the
 # hashes of the few inline scripts and styles (the theme script, Mermaid diagrams' styles)
 # where the policy below has placeholders, and checks every line's length.
 # Everything is served from this origin: no CDN, no analytics, no third-party requests.

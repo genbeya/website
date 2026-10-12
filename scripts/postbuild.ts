@@ -5,7 +5,7 @@
  *  2. Hashes the remaining inline <script>s (and <style>s, should any appear) into
  *     dist/_headers' Content-Security-Policy: the policy allows exactly those, nothing else inline.
  *  3. Fails the build when a page or stylesheet would load anything from another origin,
- *     or when a header line is longer than Cloudflare Pages accepts.
+ *     or when a header line is longer than Cloudflare accepts.
  */
 import { createHash } from "node:crypto";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -16,7 +16,7 @@ const SCRIPT = "postbuild";
 const dist = path.join(root, "dist");
 /** The demo is the app's bundle, with its own policy in _headers. */
 const EXCLUDED = ["try/app/"];
-/** Cloudflare Pages ignores longer lines in _headers. */
+/** Cloudflare ignores longer lines in _headers. */
 const MAX_LINE = 2000;
 
 function files(dir: string, ext: string[]): string[] {
@@ -126,9 +126,7 @@ function main(): void {
     .replace(/ +;/g, ";");
   const long = headers.split("\n").filter((line) => line.length > MAX_LINE);
   if (long.length > 0) {
-    throw new Error(
-      `_headers has lines over ${MAX_LINE} characters, which Cloudflare Pages ignores:\n${long.join("\n")}`,
-    );
+    throw new Error(`_headers has lines over ${MAX_LINE} characters, which Cloudflare ignores:\n${long.join("\n")}`);
   }
   writeFileSync(headersFile, headers);
   log(

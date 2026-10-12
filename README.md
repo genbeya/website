@@ -3,7 +3,7 @@
 The website of [Genbeya](https://github.com/genbeya/genbeya): the home page, the documentation, the browser demo
 and the downloads. A static site built with [Astro](https://astro.build), [Starlight](https://starlight.astro.build)
 for the docs, [GSAP](https://gsap.com) with ScrollTrigger for the home page's story and
-[Pagefind](https://pagefind.app) for search, hosted on Cloudflare Pages.
+[Pagefind](https://pagefind.app) for search, hosted on Cloudflare as a Worker with static assets.
 
 **Privacy is literal here**: no cookies, no localStorage, sessionStorage or IndexedDB, no analytics, and not a single
 request to another origin. Fonts are self-hosted, nothing comes from a CDN, and the GitHub API is only ever asked at
@@ -16,7 +16,7 @@ Requires Node.js 24 and, for the documentation, a clone of the app repository ne
 ```text
 Downloads/
 ├── genbeya/            https://github.com/genbeya/genbeya
-└── genbeya-website/    this repository
+└── genbeya-website/    this repository (github.com/genbeya/website)
 ```
 
 ```bash
@@ -32,7 +32,7 @@ when there is no clone), the browser demo (or a placeholder). Re-sync by hand af
 | ----------------------- | ------------------------------------------------------------------------------------------------- |
 | `npm run dev`           | Development server with hot reload                                                                |
 | `npm run build`         | Static site in `dist/`, then the post-build checks (see [Security](#security-headers))            |
-| `npm run preview`       | Serves `dist/` the way Cloudflare Pages does, with the headers of `dist/_headers`                 |
+| `npm run preview`       | Serves `dist/` the way Cloudflare does, with the headers of `dist/_headers`                       |
 | `npm run sync-docs`     | Copies the app's wiki into the docs (`-- --repo <path>`, `--docs <path>`, `--ref <tag>`)          |
 | `npm run sync-demo`     | Installs the browser demo at `/try/app/` (`-- --zip <file>` or `--source <dir>`, `--placeholder`) |
 | `npm run fetch-release` | Writes the latest release's installers for the download page, from the GitHub API                 |
@@ -63,7 +63,7 @@ when there is no clone), the browser demo (or a placeholder). Re-sync by hand af
 
 ```text
 astro.config.ts            Astro, Starlight (re-skinned, components overridden), the Markdown pipeline
-public/_headers            Security headers for Cloudflare Pages (hashes filled in after the build)
+public/_headers            Security headers for Cloudflare (hashes filled in after the build)
 scripts/                   sync-docs, sync-demo, fetch-release, prepare, postbuild, serve, screenshots
 src/
   components/              Header, footer, theme toggle, privacy notice, logo mark — shared by all pages
@@ -165,7 +165,8 @@ origin, and that localStorage, sessionStorage, IndexedDB and cookies stay empty.
 
 ## Deploy
 
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds, tests and deploys the site to Cloudflare Pages:
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds, tests and deploys the site to Cloudflare, as a Worker that only serves static assets
+([`wrangler.toml`](wrangler.toml)):
 
 - on every push to `main` (pull requests are built and tested, not deployed),
 - when the app repository announces a release (`repository_dispatch` of type `genbeya-release`),
@@ -179,27 +180,28 @@ release is coming soon.
 
 ### One-time setup
 
-1. **Cloudflare Pages project** — in the Cloudflare dashboard, **Workers & Pages → Create → Pages → Direct Upload**,
-   name it `genbeya-website` (as in `wrangler.toml`). Don't connect it to Git: the workflow uploads the build.
-2. **Custom domain** — in the project, **Custom domains → Set up a domain**: `genbeya.fyi` (and `www.genbeya.fyi`,
-   redirected to it with a Redirect Rule if you like).
-3. **API token** — **My Profile → API Tokens → Create Token → Custom token** with the permission
-   _Account → Cloudflare Pages → Edit_, limited to your account.
-4. **Secrets** — in this repository, **Settings → Secrets and variables → Actions**:
-   - `CLOUDFLARE_API_TOKEN` — the token from step 3
-   - `CLOUDFLARE_ACCOUNT_ID` — your account ID (in the dashboard's URL, or **Workers & Pages → Account details**)
+Nothing needs creating in the Cloudflare dashboard beforehand: the first `wrangler deploy` creates the Worker
+`genbeya-website`.
+
+1. **API token** — **My Profile → API Tokens → Create Token**, template **Edit Cloudflare Workers**, with your account
+   under _Account Resources_ and `genbeya.fyi` under _Zone Resources_.
+2. **Secrets** — in this repository, **Settings → Secrets and variables → Actions**:
+   - `CLOUDFLARE_API_TOKEN` — the token from step 1
+   - `CLOUDFLARE_ACCOUNT_ID` — your account ID (in the dashboard's URL, right after `dash.cloudflare.com/`)
 
    Without them the workflow builds and tests, and skips the deployment with a notice.
 
-5. **Release trigger** (optional) — so a new app release updates the site at once, add a step at the end of the app's
-   release job, with a fine-grained token that may write _Contents_ of this repository (here assumed to be
-   `genbeya/genbeya-website`), stored in the app repository as `WEBSITE_DISPATCH_TOKEN`:
+3. **Custom domain** — after the first deployment: **Workers & Pages → genbeya-website → Settings → Domains & Routes →
+   Add → Custom domain**: `genbeya.fyi` (and `www.genbeya.fyi`, redirected to it with a Redirect Rule if you like).
+   Keep **Web Analytics** off: it would add a tracking script, which the site's policy blocks anyway.
+4. **Release trigger** (optional) — so a new app release updates the site at once, add a step at the end of the app's
+   release job, with a fine-grained token that may write _Contents_ of this repository (`genbeya/website`), stored in the app repository as `WEBSITE_DISPATCH_TOKEN`:
 
    ```yaml
    - name: Update genbeya.fyi
      env:
        GH_TOKEN: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
-     run: gh api repos/genbeya/genbeya-website/dispatches -f event_type=genbeya-release -F "client_payload[tag]=$tag"
+     run: gh api repos/genbeya/website/dispatches -f event_type=genbeya-release -F "client_payload[tag]=$tag"
    ```
 
    Without it, the site picks up the release on its next push or manual run.

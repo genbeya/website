@@ -1,7 +1,7 @@
 /**
  * npm run preview [-- --port 4321] [--dir dist]
  *
- * Serves the built site the way Cloudflare Pages does, including the headers of dist/_headers
+ * Serves the built site the way Cloudflare does, including the headers of dist/_headers
  * (so the Content-Security-Policy is enforced locally and in the end-to-end tests), compression,
  * directory indexes, trailing-slash redirects and the 404 page.
  */
@@ -40,7 +40,7 @@ interface Rule {
   detach: string[];
 }
 
-/** Parses Cloudflare Pages' _headers format: a path pattern, then indented `Name: value` or `! Name` lines. */
+/** Parses Cloudflare's _headers format: a path pattern, then indented `Name: value` or `! Name` lines. */
 export function parseHeaders(text: string): Rule[] {
   const rules: Rule[] = [];
   let current: Rule | undefined;
