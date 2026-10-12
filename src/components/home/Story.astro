@@ -542,7 +542,10 @@ const allParts = ["wiki", "tasks", "history", "team"];
       display: block;
       align-self: center;
       opacity: 0;
-      visibility: hidden;
+    }
+    /* Only the chapter on show takes clicks; the others lie transparent on top of it. */
+    :global(.js) .story.is-live :is(.story__hero, .chapter):not(.is-active) {
+      pointer-events: none;
     }
     :global(.js) .chapter__figure {
       display: none;

@@ -180,12 +180,14 @@ function build(story: HTMLElement): () => void {
   // Text: the hero hands over to chapter 1, each chapter to the next.
   const lines = (el: HTMLElement) =>
     el.matches("[data-hero]") ? [...el.children] : $$(`#${el.id} .chapter__text > *`);
+  // Opacity only, never visibility: hidden chapters stay readable for screen readers and
+  // reachable by keyboard (focusing one scrolls to it); the active one takes the pointer.
   const textIn = (el: HTMLElement, at: number) => {
-    tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2, ease: "none" }, at);
+    tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "none" }, at);
     tl.fromTo(lines(el), { y: 36 }, { y: 0, duration: 0.24, stagger: 0.025, ease: "power3.out" }, at);
   };
   const textOut = (el: HTMLElement, at: number) => {
-    tl.fromTo(el, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.18, ease: "none" }, at);
+    tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: "none" }, at);
     tl.fromTo(lines(el), { y: 0 }, { y: -30, duration: 0.2, ease: "power2.in" }, at);
   };
   tl.fromTo(hint, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.15 }, 0.02);
@@ -296,6 +298,7 @@ function build(story: HTMLElement): () => void {
     if (index === active) return;
     active = index;
     story.dataset.chapter = String(index);
+    [hero, ...chapterEls].forEach((el, i) => el.classList.toggle("is-active", i === index));
     railLinks.forEach((link, i) => {
       if (i + 1 === index) link.setAttribute("aria-current", "step");
       else link.removeAttribute("aria-current");
@@ -347,6 +350,7 @@ function build(story: HTMLElement): () => void {
     story.removeEventListener("click", onRail);
     story.removeEventListener("focusin", onFocus);
     story.classList.remove("is-live");
-    delete story.dataset.chapter;
+    story.dataset.chapter = "0";
+    [hero, ...chapterEls].forEach((el) => el.classList.remove("is-active"));
   };
 }
