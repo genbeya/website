@@ -192,6 +192,9 @@ const allParts = ["wiki", "tasks", "history", "team"];
     --step: 85svh;
     position: relative;
     isolation: isolate;
+    /* The intro folds the walls in 3D; their corners must not widen the page. `clip`, unlike
+       `hidden`, keeps the stage sticky. */
+    overflow-x: clip;
   }
 
   /* ---------- The stage: hero and visual ---------- */

@@ -99,11 +99,17 @@ test.describe("home page", () => {
   });
 
   test("fits a phone's width @phone", async ({ page }) => {
-    await page.goto("/");
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-    expect(overflow).toBeLessThanOrEqual(0);
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    const overflow = () => page.evaluate(() => document.documentElement.scrollWidth - 375);
+    // During the intro (the walls fold in 3D), after it, and all the way down.
+    for (const wait of [150, 400, 2500]) {
+      await page.waitForTimeout(wait);
+      expect(await overflow()).toBeLessThanOrEqual(0);
+    }
     await scrollTo(page, await chapterPosition(page, 3));
     await expect(page.locator("[data-story]")).toHaveAttribute("data-chapter", "3");
     await expect(page.locator(".chapter[data-chapter-index='3'] h2")).toBeInViewport();
+    await scrollTo(page, await page.evaluate(() => document.documentElement.scrollHeight));
+    expect(await overflow()).toBeLessThanOrEqual(0);
   });
 });
