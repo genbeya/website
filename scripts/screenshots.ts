@@ -6,7 +6,7 @@
  * desktop (1440 × 900) and a phone (375 × 812), dark and light; and records a video of the
  * story scrolling by. Serves dist/ itself, with its headers.
  */
-import { mkdirSync, renameSync } from "node:fs";
+import { mkdirSync, renameSync, rmSync } from "node:fs";
 import path from "node:path";
 import { chromium, type Browser, type Page } from "playwright";
 import { log, option, parseArgs, root } from "./lib/cli.ts";
@@ -119,6 +119,7 @@ async function recordStory(browser: Browser): Promise<void> {
   const video = page.video();
   await context.close();
   if (video) renameSync(await video.path(), path.join(out, "home-story-desktop-dark.webm"));
+  rmSync(videoDir, { recursive: true, force: true });
 }
 
 mkdirSync(out, { recursive: true });
