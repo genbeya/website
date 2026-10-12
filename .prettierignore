@@ -1,0 +1,10 @@
+dist/
+.astro/
+node_modules/
+src/content/docs/docs/
+src/generated/
+public/try/app/
+.cache/
+test-results/
+playwright-report/
+package-lock.json
