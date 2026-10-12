@@ -67,6 +67,9 @@
     "brand-images": "node scripts/brand-images.ts"
   },
   "overrides": {
-    "katex": "$katex"
+    "katex": "$katex",
+    "postcss-nested": {
+      "postcss-selector-parser": "^7.1.6"
+    }
   }
 }
