@@ -120,6 +120,8 @@ jobs:
           WRANGLER_SEND_METRICS: "false"
         uses: cloudflare/wrangler-action@v3
         with:
+          # The action's default wrangler (3.x) uploads _headers as a file instead of applying it.
+          wranglerVersion: "4.149.0"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # wrangler.toml names the Worker and its assets (dist/); the first deploy creates the Worker.
