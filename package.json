@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "The website of Genbeya, genbeya.fyi",
+  "license": "FSL-1.1-ALv2",
   "engines": {
     "node": ">=22.12.0"
   },

@@ -55,7 +55,10 @@ const columns = [
   </div>
   <div class="site-footer__legal">
     <p>
-      {site.license ? `License: ${site.license}` : "License: to be decided"}
+      <span>
+        License: <a href={site.license.url}>{site.license.name}</a> (generated files:{" "}
+        <a href={site.license.generated.url}>{site.license.generated.name}</a>)
+      </span>
       <span aria-hidden="true">·</span>
       Made by {site.author}
       <span aria-hidden="true">·</span>© {year}
@@ -132,6 +135,11 @@ const columns = [
     flex-wrap: wrap;
     gap: 0.25rem 0.6rem;
     margin: 0;
+  }
+  /* Links inside the sentence are underlined, so they stand out from it. */
+  .site-footer__legal a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .site-footer--compact {
