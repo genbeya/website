@@ -2,11 +2,12 @@
  * npm run preview [-- --port 4321] [--dir dist]
  *
  * Serves the built site the way Cloudflare Pages does, including the headers of dist/_headers
- * (so the Content-Security-Policy is enforced locally and in the end-to-end tests), directory
- * indexes, trailing-slash redirects and the 404 page.
+ * (so the Content-Security-Policy is enforced locally and in the end-to-end tests), compression,
+ * directory indexes, trailing-slash redirects and the 404 page.
  */
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
-import { createServer, type ServerResponse } from "node:http";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { createGzip } from "node:zlib";
 import path from "node:path";
 import { log, option, parseArgs, root } from "./lib/cli.ts";
 
@@ -80,10 +81,25 @@ export function headersFor(rules: Rule[], pathname: string): Map<string, string>
   return headers;
 }
 
-function send(res: ServerResponse, status: number, file: string, headers: Map<string, string>): void {
+const COMPRESSIBLE = /^(text\/|application\/(json|xml|manifest)|image\/svg)/;
+
+function send(
+  req: IncomingMessage,
+  res: ServerResponse,
+  status: number,
+  file: string,
+  headers: Map<string, string>,
+): void {
   res.statusCode = status;
   for (const [name, value] of headers) res.setHeader(name, value);
-  res.setHeader("content-type", TYPES[path.extname(file)] ?? "application/octet-stream");
+  const type = TYPES[path.extname(file)] ?? "application/octet-stream";
+  res.setHeader("content-type", type);
+  if (COMPRESSIBLE.test(type) && /\bgzip\b/.test(String(req.headers["accept-encoding"] ?? ""))) {
+    res.setHeader("content-encoding", "gzip");
+    res.setHeader("vary", "accept-encoding");
+    createReadStream(file).pipe(createGzip()).pipe(res);
+    return;
+  }
   createReadStream(file).pipe(res);
 }
 
@@ -101,17 +117,17 @@ export function serve(dir: string, port: number) {
     }
     const headers = headersFor(rules, pathname);
 
-    if (existsSync(file) && statSync(file).isFile()) return send(res, 200, file, headers);
+    if (existsSync(file) && statSync(file).isFile()) return send(req, res, 200, file, headers);
     if (existsSync(path.join(file, "index.html"))) {
       if (!pathname.endsWith("/")) {
         res.writeHead(308, { location: `${pathname}/${url.search}` }).end();
         return;
       }
-      return send(res, 200, path.join(file, "index.html"), headers);
+      return send(req, res, 200, path.join(file, "index.html"), headers);
     }
-    if (existsSync(`${file}.html`)) return send(res, 200, `${file}.html`, headers);
+    if (existsSync(`${file}.html`)) return send(req, res, 200, `${file}.html`, headers);
     const notFound = path.join(dir, "404.html");
-    if (existsSync(notFound)) return send(res, 404, notFound, headersFor(rules, "/404"));
+    if (existsSync(notFound)) return send(req, res, 404, notFound, headersFor(rules, "/404"));
     res.writeHead(404).end("Not found");
   });
   server.listen(port);

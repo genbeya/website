@@ -89,12 +89,12 @@ export function initStory(): void {
         story.classList.add("is-live");
         return;
       }
-      return build(story);
+      return build(story, context);
     },
   );
 }
 
-function build(story: HTMLElement): () => void {
+function build(story: HTMLElement, context: gsap.Context): () => void {
   const $ = <T extends Element = HTMLElement>(selector: string) => story.querySelector<T>(selector)!;
   const $$ = <T extends Element = HTMLElement>(selector: string) => [...story.querySelectorAll<T>(selector)];
 
@@ -160,197 +160,226 @@ function build(story: HTMLElement): () => void {
     .from(people, { scale: 0, transformOrigin: "50% 100%", duration: 0.7, stagger: 0.1, ease: "back.out(1.9)" }, 0.85);
   // The from-states are set: the logo may show now (the CSS kept it hidden until here).
   story.classList.add("is-live");
-  if (!startsAtTop) intro.progress(1);
-
-  /* ---------- The scroll story ---------- */
-  const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.inOut", immediateRender: false } });
-  tl.set({}, {}, STORY_STEPS);
-
-  // The logo's layers and the spotlight move from each step's state to the next.
-  for (let step = 0; step < STORY_STEPS - 1; step++) {
-    const from = layerStates(step);
-    const to = layerStates(step + 1);
-    const at = step + 0.6;
-    for (const part of PARTS) {
-      tl.fromTo(layers[part], from[part], { ...to[part], duration: 0.4, ease: "power3.inOut" }, at);
-    }
-    tl.fromTo(spot, spotState(step), { ...spotState(step + 1), duration: 0.4 }, at);
-  }
-
-  // Text: the hero hands over to chapter 1, each chapter to the next.
-  const lines = (el: HTMLElement) =>
-    el.matches("[data-hero]") ? [...el.children] : $$(`#${el.id} .chapter__text > *`);
-  // Opacity only, never visibility: hidden chapters stay readable for screen readers and
-  // reachable by keyboard (focusing one scrolls to it); the active one takes the pointer.
-  const textIn = (el: HTMLElement, at: number) => {
-    tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "none" }, at);
-    tl.fromTo(lines(el), { y: 36 }, { y: 0, duration: 0.24, stagger: 0.025, ease: "power3.out" }, at);
-  };
-  const textOut = (el: HTMLElement, at: number) => {
-    tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: "none" }, at);
-    tl.fromTo(lines(el), { y: 0 }, { y: -30, duration: 0.2, ease: "power2.in" }, at);
-  };
-  tl.fromTo(hint, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.15 }, 0.02);
-  textOut(hero, 0.65);
-  chapterEls.forEach((chapter, i) => {
-    const step = i + 1;
-    textIn(chapter, step - 0.2);
-    if (step < STORY_STEPS - 1) textOut(chapter, step + 0.65);
-  });
-
-  // 1 · One room: labels name the parts of the exploded room.
-  tl.fromTo(labels, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.18, stagger: 0.04 }, 0.68);
-  tl.fromTo(labels, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.15 }, 1.6);
-
-  // 2 · Docs: the wiki page's lines write themselves.
-  tl.fromTo(wikiLines, { scaleX: 1 }, { scaleX: 0, transformOrigin: "0% 50%", duration: 0.1, stagger: 0.01 }, 1.6);
-  tl.fromTo(
-    wikiLines,
-    { scaleX: 0 },
-    { scaleX: 1, transformOrigin: "0% 50%", duration: 0.2, stagger: 0.05, ease: "power2.out" },
-    1.76,
-  );
-
-  // 3 · History: the branch draws its path and its commits pop up.
-  tl.fromTo(branchLines, { drawSVG: "100%" }, { drawSVG: "0%", duration: 0.1 }, 2.6);
-  tl.fromTo(branchNodes, { scale: 1 }, { scale: 0, transformOrigin: "50% 50%", duration: 0.1 }, 2.6);
-  tl.fromTo(
-    branchLines,
-    { drawSVG: "0%" },
-    { drawSVG: "100%", duration: 0.22, stagger: 0.1, ease: "power1.inOut" },
-    2.74,
-  );
-  tl.fromTo(
-    branchNodes,
-    { scale: 0 },
-    { scale: 1, transformOrigin: "50% 50%", duration: 0.14, stagger: 0.07, ease: "back.out(2.6)" },
-    2.8,
-  );
-
-  // 4 · Tasks: the checkmarks tick, and the open task gets done.
-  tl.fromTo(taskChecks, { drawSVG: "100%" }, { drawSVG: "0%", duration: 0.12 }, 3.6);
-  tl.fromTo(taskLines, { scaleX: 1 }, { scaleX: 0, transformOrigin: "0% 50%", duration: 0.12 }, 3.6);
-  tl.fromTo(
-    taskChecks,
-    { drawSVG: "0%" },
-    { drawSVG: "100%", duration: 0.14, stagger: 0.09, ease: "power2.out" },
-    3.76,
-  );
-  tl.fromTo(
-    taskLines,
-    { scaleX: 0 },
-    { scaleX: 1, transformOrigin: "0% 50%", duration: 0.18, stagger: 0.05, ease: "power2.out" },
-    3.76,
-  );
-  tl.fromTo(
-    taskDone,
-    { opacity: 0, drawSVG: "0%" },
-    { opacity: 1, drawSVG: "100%", duration: 0.14, ease: "power2.out" },
-    4.0,
-  );
-  tl.fromTo(taskDone, { opacity: 1 }, { opacity: 0, duration: 0.12 }, 4.62);
-
-  // 5 · Team & agents: the people step in, then the agents join them.
-  tl.fromTo(people, { scale: 1 }, { scale: 0, transformOrigin: "50% 100%", duration: 0.14 }, 4.6);
-  tl.fromTo(
-    people,
-    { scale: 0 },
-    { scale: 1, transformOrigin: "50% 100%", duration: 0.18, stagger: 0.06, ease: "back.out(2)" },
-    4.76,
-  );
-  tl.fromTo(
-    agents,
-    { opacity: 0, scale: 0, rotation: -90 },
-    {
-      opacity: 1,
-      scale: 1,
-      rotation: 0,
-      transformOrigin: "50% 50%",
-      duration: 0.2,
-      stagger: 0.06,
-      ease: "back.out(2)",
-    },
-    4.98,
-  );
-  tl.fromTo(agents, { opacity: 1 }, { opacity: 0, duration: 0.12 }, 5.62);
-
-  // 6 · Plain files: the mono logo, and the files it is made of float out.
-  tl.fromTo(mono, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 0.7, duration: 0.4, ease: "power3.inOut" }, 5.6);
-  tl.fromTo(
-    files,
-    {
-      autoAlpha: 0,
-      scale: 0.6,
-      x: (_: number, el: HTMLElement) =>
-        ((50 - parseFloat(el.style.getPropertyValue("--x"))) / 100) * logoBox.offsetWidth,
-      y: (_: number, el: HTMLElement) =>
-        ((50 - parseFloat(el.style.getPropertyValue("--y"))) / 100) * logoBox.offsetHeight,
-    },
-    { autoAlpha: 1, scale: 1, x: 0, y: 0, duration: 0.3, stagger: 0.04, ease: "power3.out" },
-    5.68,
-  );
-
-  tl.fromTo(progressBar, { scaleX: 0 }, { scaleX: 1, duration: STORY_STEPS, ease: "none" }, 0);
-
-  /* ---------- Scroll, rail and keyboard ---------- */
-  let active = -1;
-  const setActive = (index: number) => {
-    if (index === active) return;
-    active = index;
-    story.dataset.chapter = String(index);
-    [hero, ...chapterEls].forEach((el, i) => el.classList.toggle("is-active", i === index));
-    railLinks.forEach((link, i) => {
-      if (i + 1 === index) link.setAttribute("aria-current", "step");
-      else link.removeAttribute("aria-current");
-    });
-  };
-
-  const trigger = ScrollTrigger.create({
-    trigger: story,
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 0.6,
-    animation: tl,
-    invalidateOnRefresh: true,
-    onUpdate(self) {
-      if (self.progress > 0.002 && intro.progress() < 1) intro.progress(1);
-      const t = self.progress * STORY_STEPS;
-      setActive(Math.min(chapters.length, Math.floor(t + 0.175)));
-    },
-  });
-  setActive(Math.min(chapters.length, Math.floor(trigger.progress * STORY_STEPS + 0.175)));
-
-  /** Scrolls to the middle of a step's hold. */
-  const scrollToStep = (step: number, behavior: ScrollBehavior) => {
-    const t = step === 0 ? 0 : step + 0.25;
-    const y = trigger.start + (t / STORY_STEPS) * (trigger.end - trigger.start);
-    window.scrollTo({ top: y, behavior });
-  };
-
-  const onRail = (event: Event) => {
-    const link = (event.target as Element).closest<HTMLAnchorElement>("[data-rail]");
-    if (!link) return;
-    event.preventDefault();
-    scrollToStep(Number(link.dataset["rail"]), "smooth");
-  };
-  // Keyboard users reach links in chapters that aren't showing: bring their chapter in.
-  const onFocus = (event: FocusEvent) => {
-    const target = event.target as Element;
-    if (target.closest(".story__rail")) return;
-    const chapter = target.closest<HTMLElement>(".chapter");
-    const step = chapter ? Number(chapter.dataset["chapterIndex"]) : target.closest("[data-hero]") ? 0 : -1;
-    if (step >= 0 && step !== active) scrollToStep(step, "instant");
-  };
-  story.addEventListener("click", onRail);
-  story.addEventListener("focusin", onFocus);
-
   if (startsAtTop) intro.play();
+  else intro.progress(1);
+
+  // The scroll story is built once the browser is idle, or at the first scroll or focus, so the
+  // intro starts at once and the page stays responsive while it loads.
+  let stopStory: (() => void) | undefined;
+  const startStory = () => {
+    cancelIdle();
+    if (!stopStory) context.add(() => (stopStory = scrollStory()));
+  };
+  const idle =
+    "requestIdleCallback" in window ? requestIdleCallback(startStory, { timeout: 1200 }) : setTimeout(startStory, 300);
+  const cancelIdle = () => {
+    if ("cancelIdleCallback" in window) cancelIdleCallback(idle);
+    else clearTimeout(idle);
+    window.removeEventListener("scroll", startStory);
+    story.removeEventListener("focusin", startStory);
+  };
+  window.addEventListener("scroll", startStory, { passive: true });
+  story.addEventListener("focusin", startStory);
+  if (!startsAtTop) startStory();
 
   return () => {
-    story.removeEventListener("click", onRail);
-    story.removeEventListener("focusin", onFocus);
+    cancelIdle();
+    stopStory?.();
     story.classList.remove("is-live");
-    story.dataset.chapter = "0";
-    [hero, ...chapterEls].forEach((el) => el.classList.remove("is-active"));
   };
+
+  /* ---------- The scroll story ---------- */
+  function scrollStory(): () => void {
+    const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.inOut", immediateRender: false } });
+    tl.set({}, {}, STORY_STEPS);
+
+    // The logo's layers and the spotlight move from each step's state to the next.
+    for (let step = 0; step < STORY_STEPS - 1; step++) {
+      const from = layerStates(step);
+      const to = layerStates(step + 1);
+      const at = step + 0.6;
+      for (const part of PARTS) {
+        tl.fromTo(layers[part], from[part], { ...to[part], duration: 0.4, ease: "power3.inOut" }, at);
+      }
+      tl.fromTo(spot, spotState(step), { ...spotState(step + 1), duration: 0.4 }, at);
+    }
+
+    // Text: the hero hands over to chapter 1, each chapter to the next.
+    const lines = (el: HTMLElement) =>
+      el.matches("[data-hero]") ? [...el.children] : $$(`#${el.id} .chapter__text > *`);
+    // Opacity only, never visibility: hidden chapters stay readable for screen readers and
+    // reachable by keyboard (focusing one scrolls to it); the active one takes the pointer.
+    const textIn = (el: HTMLElement, at: number) => {
+      tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "none" }, at);
+      tl.fromTo(lines(el), { y: 36 }, { y: 0, duration: 0.24, stagger: 0.025, ease: "power3.out" }, at);
+    };
+    const textOut = (el: HTMLElement, at: number) => {
+      tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: "none" }, at);
+      tl.fromTo(lines(el), { y: 0 }, { y: -30, duration: 0.2, ease: "power2.in" }, at);
+    };
+    tl.fromTo(hint, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.15 }, 0.02);
+    textOut(hero, 0.65);
+    chapterEls.forEach((chapter, i) => {
+      const step = i + 1;
+      textIn(chapter, step - 0.2);
+      if (step < STORY_STEPS - 1) textOut(chapter, step + 0.65);
+    });
+
+    // 1 · One room: labels name the parts of the exploded room.
+    tl.fromTo(labels, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.18, stagger: 0.04 }, 0.68);
+    tl.fromTo(labels, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.15 }, 1.6);
+
+    // 2 · Docs: the wiki page's lines write themselves.
+    tl.fromTo(wikiLines, { scaleX: 1 }, { scaleX: 0, transformOrigin: "0% 50%", duration: 0.1, stagger: 0.01 }, 1.6);
+    tl.fromTo(
+      wikiLines,
+      { scaleX: 0 },
+      { scaleX: 1, transformOrigin: "0% 50%", duration: 0.2, stagger: 0.05, ease: "power2.out" },
+      1.76,
+    );
+
+    // 3 · History: the branch draws its path and its commits pop up.
+    tl.fromTo(branchLines, { drawSVG: "100%" }, { drawSVG: "0%", duration: 0.1 }, 2.6);
+    tl.fromTo(branchNodes, { scale: 1 }, { scale: 0, transformOrigin: "50% 50%", duration: 0.1 }, 2.6);
+    tl.fromTo(
+      branchLines,
+      { drawSVG: "0%" },
+      { drawSVG: "100%", duration: 0.22, stagger: 0.1, ease: "power1.inOut" },
+      2.74,
+    );
+    tl.fromTo(
+      branchNodes,
+      { scale: 0 },
+      { scale: 1, transformOrigin: "50% 50%", duration: 0.14, stagger: 0.07, ease: "back.out(2.6)" },
+      2.8,
+    );
+
+    // 4 · Tasks: the checkmarks tick, and the open task gets done.
+    tl.fromTo(taskChecks, { drawSVG: "100%" }, { drawSVG: "0%", duration: 0.12 }, 3.6);
+    tl.fromTo(taskLines, { scaleX: 1 }, { scaleX: 0, transformOrigin: "0% 50%", duration: 0.12 }, 3.6);
+    tl.fromTo(
+      taskChecks,
+      { drawSVG: "0%" },
+      { drawSVG: "100%", duration: 0.14, stagger: 0.09, ease: "power2.out" },
+      3.76,
+    );
+    tl.fromTo(
+      taskLines,
+      { scaleX: 0 },
+      { scaleX: 1, transformOrigin: "0% 50%", duration: 0.18, stagger: 0.05, ease: "power2.out" },
+      3.76,
+    );
+    tl.fromTo(
+      taskDone,
+      { opacity: 0, drawSVG: "0%" },
+      { opacity: 1, drawSVG: "100%", duration: 0.14, ease: "power2.out" },
+      4.0,
+    );
+    tl.fromTo(taskDone, { opacity: 1 }, { opacity: 0, duration: 0.12 }, 4.62);
+
+    // 5 · Team & agents: the people step in, then the agents join them.
+    tl.fromTo(people, { scale: 1 }, { scale: 0, transformOrigin: "50% 100%", duration: 0.14 }, 4.6);
+    tl.fromTo(
+      people,
+      { scale: 0 },
+      { scale: 1, transformOrigin: "50% 100%", duration: 0.18, stagger: 0.06, ease: "back.out(2)" },
+      4.76,
+    );
+    tl.fromTo(
+      agents,
+      { opacity: 0, scale: 0, rotation: -90 },
+      {
+        opacity: 1,
+        scale: 1,
+        rotation: 0,
+        transformOrigin: "50% 50%",
+        duration: 0.2,
+        stagger: 0.06,
+        ease: "back.out(2)",
+      },
+      4.98,
+    );
+    tl.fromTo(agents, { opacity: 1 }, { opacity: 0, duration: 0.12 }, 5.62);
+
+    // 6 · Plain files: the mono logo, and the files it is made of float out.
+    tl.fromTo(mono, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 0.7, duration: 0.4, ease: "power3.inOut" }, 5.6);
+    tl.fromTo(
+      files,
+      {
+        autoAlpha: 0,
+        scale: 0.6,
+        x: (_: number, el: HTMLElement) =>
+          ((50 - parseFloat(el.style.getPropertyValue("--x"))) / 100) * logoBox.offsetWidth,
+        y: (_: number, el: HTMLElement) =>
+          ((50 - parseFloat(el.style.getPropertyValue("--y"))) / 100) * logoBox.offsetHeight,
+      },
+      { autoAlpha: 1, scale: 1, x: 0, y: 0, duration: 0.3, stagger: 0.04, ease: "power3.out" },
+      5.68,
+    );
+
+    tl.fromTo(progressBar, { scaleX: 0 }, { scaleX: 1, duration: STORY_STEPS, ease: "none" }, 0);
+
+    /* ---------- Scroll, rail and keyboard ---------- */
+    let active = -1;
+    const setActive = (index: number) => {
+      if (index === active) return;
+      active = index;
+      story.dataset.chapter = String(index);
+      [hero, ...chapterEls].forEach((el, i) => el.classList.toggle("is-active", i === index));
+      railLinks.forEach((link, i) => {
+        if (i + 1 === index) link.setAttribute("aria-current", "step");
+        else link.removeAttribute("aria-current");
+      });
+    };
+
+    const trigger = ScrollTrigger.create({
+      trigger: story,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.6,
+      animation: tl,
+      invalidateOnRefresh: true,
+      onUpdate(self) {
+        if (self.progress > 0.002 && intro.progress() < 1) intro.progress(1);
+        const t = self.progress * STORY_STEPS;
+        setActive(Math.min(chapters.length, Math.floor(t + 0.175)));
+      },
+    });
+    setActive(Math.min(chapters.length, Math.floor(trigger.progress * STORY_STEPS + 0.175)));
+
+    /** Scrolls to the middle of a step's hold. */
+    const scrollToStep = (step: number, behavior: ScrollBehavior) => {
+      const t = step === 0 ? 0 : step + 0.25;
+      const y = trigger.start + (t / STORY_STEPS) * (trigger.end - trigger.start);
+      window.scrollTo({ top: y, behavior });
+    };
+
+    const onRail = (event: Event) => {
+      const link = (event.target as Element).closest<HTMLAnchorElement>("[data-rail]");
+      if (!link) return;
+      event.preventDefault();
+      scrollToStep(Number(link.dataset["rail"]), "smooth");
+    };
+    // Keyboard users reach links in chapters that aren't showing: bring their chapter in.
+    const onFocus = (event: FocusEvent) => {
+      const target = event.target as Element;
+      if (target.closest(".story__rail")) return;
+      const chapter = target.closest<HTMLElement>(".chapter");
+      const step = chapter ? Number(chapter.dataset["chapterIndex"]) : target.closest("[data-hero]") ? 0 : -1;
+      if (step >= 0 && step !== active) scrollToStep(step, "instant");
+    };
+    story.addEventListener("click", onRail);
+    story.addEventListener("focusin", onFocus);
+    // The focus that started the story is past; handle it now.
+    if (document.activeElement && story.contains(document.activeElement)) {
+      onFocus({ target: document.activeElement } as unknown as FocusEvent);
+    }
+
+    return () => {
+      story.removeEventListener("click", onRail);
+      story.removeEventListener("focusin", onFocus);
+      story.dataset.chapter = "0";
+      [hero, ...chapterEls].forEach((el) => el.classList.remove("is-active"));
+    };
+  }
 }
