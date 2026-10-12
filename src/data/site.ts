@@ -7,11 +7,11 @@ export const site = {
   repository: "https://github.com/genbeya/genbeya",
   releases: "https://github.com/genbeya/genbeya/releases",
   author: "Emanuel Knecht",
-  /** The app's license, and the MIT License of the files it writes into repositories. */
+  /** The app's license, and the MIT-0 license of the files it writes into repositories. */
   license: {
     name: "FSL-1.1-ALv2",
     url: "https://github.com/genbeya/genbeya/blob/main/LICENSE.md",
-    generated: { name: "MIT", url: "https://github.com/genbeya/genbeya/blob/main/LICENSE-MIT.md" },
+    generated: { name: "MIT-0", url: "https://github.com/genbeya/genbeya/blob/main/LICENSE-MIT-0.md" },
   },
   privacy: "No cookies, no tracking, no data sold — this site makes no third-party requests.",
 } as const;

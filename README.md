@@ -213,6 +213,6 @@ This website is licensed like the app, under the
 freely, but not as a competing commercial product or service; each version becomes Apache 2.0 two years after its
 release. The documentation comes from the app repository, under its
 [license](https://github.com/genbeya/genbeya/blob/main/LICENSE.md); the files Genbeya writes into repositories are
-under the [MIT License](https://github.com/genbeya/genbeya/blob/main/LICENSE-MIT.md). The footer links both (`license`
+under the [MIT No Attribution License (MIT-0)](https://github.com/genbeya/genbeya/blob/main/LICENSE-MIT-0.md). The footer links both (`license`
 in `src/data/site.ts`). The name Genbeya and its logo are not licensed for use as another product's branding. The
 fonts, Inter and JetBrains Mono, come from Fontsource under the SIL Open Font License.
