@@ -210,7 +210,7 @@ main:focus {
   letter-spacing: -0.035em;
   line-height: 1.05;
 }
-.section-head p {
+.section-head p:not(.eyebrow) {
   margin: 1.25rem 0 0;
   color: var(--text-2);
   font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
@@ -225,6 +225,7 @@ main:focus {
 
 /* Inline code chips in marketing copy */
 .chip-code {
+  white-space: nowrap;
   padding: 0.1em 0.4em;
   border: 1px solid var(--line);
   border-radius: 0.35em;

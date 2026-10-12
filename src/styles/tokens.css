@@ -41,6 +41,10 @@
   --amber: #e2a64b;
   --red: #ec6a6a;
 
+  /* The hero's accent words, and the mono logo (white-ish here, navy on light). */
+  --headline-gradient: linear-gradient(100deg, #ececf0 8%, #aeb0ff 55%, #9fc2ff 100%);
+  --mono-logo: #e8e8ee;
+
   /* The soft halo behind the logo, so its navy walls stand off the dark background. */
   --logo-glow: rgb(124 127 242 / 0.55);
   --logo-glow-2: rgb(98 160 255 / 0.18);
@@ -85,6 +89,9 @@
   --green: #23905b;
   --amber: #b77a12;
   --red: #d64545;
+
+  --headline-gradient: linear-gradient(100deg, #16171b 5%, #5b5fe0 50%, #2f6fe0 100%);
+  --mono-logo: #22313d;
 
   --logo-glow: rgb(124 127 242 / 0.28);
   --logo-glow-2: rgb(98 160 255 / 0.12);

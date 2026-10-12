@@ -36,22 +36,19 @@
     padding: 0.45rem 0.45rem 0.45rem 0.85rem;
     border: 1px solid var(--line);
     border-radius: 999px;
-    background: color-mix(in srgb, var(--surface) 90%, transparent);
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: var(--text-3);
+    color: color-mix(in srgb, var(--text-3) 85%, transparent);
     font-family: var(--font-ui);
     font-size: 0.71875rem;
     line-height: 1.35;
-    opacity: 0.6;
     transition:
-      opacity 0.25s var(--ease-out),
       color 0.25s var(--ease-out),
       border-color 0.25s var(--ease-out);
   }
   .privacy-notice:hover,
   .privacy-notice:focus-within {
-    opacity: 1;
     color: var(--text-2);
     border-color: var(--line-strong);
   }
@@ -63,6 +60,7 @@
   }
   button {
     flex: none;
+    opacity: 0.8;
     padding: 0.3rem 0.7rem;
     border: 1px solid var(--line-strong);
     border-radius: 999px;
@@ -72,9 +70,20 @@
     font-weight: 550;
     cursor: pointer;
   }
+  .privacy-notice:is(:hover, :focus-within) button {
+    opacity: 1;
+  }
   button:hover {
     color: var(--text);
     background: var(--surface-hover);
+  }
+
+  /* In the documentation it stays within the sidebar, which keeps room for it at its end. */
+  @media (min-width: 50em) {
+    :global(:root[data-has-sidebar]) .privacy-notice {
+      max-width: calc(var(--sl-sidebar-width) - 1.5rem);
+      border-radius: var(--radius);
+    }
   }
 
   /* Phones: a slim strip along the bottom edge; the footer keeps room for it. */

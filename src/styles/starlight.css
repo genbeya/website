@@ -76,7 +76,15 @@ body {
 
 /* The privacy notice sits in the bottom-left corner: keep the sidebar's last links clear of it. */
 .sidebar-content {
-  padding-bottom: 4rem;
+  padding-bottom: 6rem;
+}
+
+/* The docs' menu button, quieter than Starlight's white disc. */
+.sl-menu-button {
+  border: 1px solid var(--line-strong) !important;
+  background-color: var(--surface-2) !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
 }
 
 :focus-visible {
