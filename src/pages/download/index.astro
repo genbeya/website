@@ -65,6 +65,10 @@ const variants = [
   },
 ];
 
+/** Where the VS Code extension is listed; the publisher and the extension are both "genbeya". */
+const marketplace = "https://marketplace.visualstudio.com/items?itemName=genbeya.genbeya";
+const openVsx = "https://open-vsx.org/extension/genbeya/genbeya";
+
 const byOs = (os: string) => release?.installers.filter((installer) => installer.os === os) ?? [];
 ---
 
@@ -247,37 +251,34 @@ const byOs = (os: string) => release?.installers.filter((installer) => installer
           </p>
           <ol class="vscode__steps">
             <li>
-              Download the <code>.vsix</code>.
+              In VS Code, open the Extensions view, search for <strong>Genbeya</strong> and choose <em>Install</em>.
             </li>
             <li>
-              In VS Code, open the Extensions view, choose <em>…</em> → <em>Install from VSIX…</em> and pick the file.
-              Or run <code>code --install-extension {release?.extension?.name ?? "Genbeya-<version>-vscode.vsix"}</code>
-              .
+              Or install the <code>.vsix</code>: <em>…</em> → <em>Install from VSIX…</em> in the Extensions view, or{" "}
+              <code>code --install-extension {release?.extension?.name ?? "Genbeya-<version>-vscode.vsix"}</code>.
             </li>
           </ol>
           <p class="vscode__note">
-            Works in VS Code 1.140 or newer, and in editors built on it such as VSCodium and Cursor. The Marketplace and
-            Open VSX listings come later.
+            Works in VS Code 1.140 or newer. VSCodium, Cursor and other editors built on VS Code install it from Open
+            VSX.
           </p>
         </div>
         <div class="vscode__action">
-          {release?.extension ? (
-            <>
-              <a
-                class="button button--primary button--large"
-                href={release.extension.url}
-                data-download={release.extension.name}
-              >
-                Download for VS Code
-              </a>
-              <p class="vscode__file">
-                {release.extension.name}
-                {release.extension.size && <> · {formatSize(release.extension.size)}</>}
-              </p>
-            </>
-          ) : (
-            <p class="vscode__file">The extension comes with the next release.</p>
-          )}
+          <a class="button button--primary button--large" href={marketplace}>
+            Get it on the Marketplace
+          </a>
+          <p class="vscode__links">
+            <a href={openVsx}>Open VSX</a>
+            {release?.extension && (
+              <>
+                {" · "}
+                <a href={release.extension.url} data-download={release.extension.name}>
+                  Download the .vsix
+                </a>
+                {release.extension.size && <> ({formatSize(release.extension.size)})</>}
+              </>
+            )}
+          </p>
         </div>
       </div>
     </section>
@@ -603,7 +604,7 @@ const byOs = (os: string) => release?.installers.filter((installer) => installer
     margin-top: 0.4rem;
   }
   .vscode__note,
-  .vscode__file {
+  .vscode__links {
     color: var(--text-2);
     font-size: 0.9rem;
   }
