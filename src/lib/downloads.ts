@@ -36,12 +36,21 @@ export interface Installer {
   format: Format;
 }
 
+/** The VS Code extension of a release, `Genbeya-<version>-vscode.vsix`. */
+export interface Extension {
+  name: string;
+  url: string;
+  size?: number;
+}
+
 export interface Release {
   version: string;
   tag: string;
   url: string;
   publishedAt?: string;
   installers: Installer[];
+  /** Releases before 0.1.0 have none. */
+  extension?: Extension;
   sample: boolean;
 }
 
@@ -60,6 +69,9 @@ export function parseInstallerName(name: string): Omit<Installer, "url" | "size"
   const [, , variant, os, arch, , format] = match;
   return { name, variant: variant as Variant, os: os as Os, arch: arch as Arch, format: format as Format };
 }
+
+/** Whether an asset is the VS Code extension. */
+export const isExtensionName = (name: string): boolean => /^Genbeya-.+-vscode\.vsix$/.test(name);
 
 export function downloadUrl(repository: string, tag: string, file: string): string {
   return `${repository}/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(file)}`;
@@ -89,7 +101,21 @@ export function toRelease(data: ReleaseData, repository: string): Release | null
         (a.arch === b.arch ? 0 : a.arch === "arm64" ? -1 : 1) ||
         FORMAT_ORDER.indexOf(a.format) - FORMAT_ORDER.indexOf(b.format),
     );
-  return { version, tag, url, ...(publishedAt ? { publishedAt } : {}), installers, sample: data.sample === true };
+  const vsix = assets.find((asset) => isExtensionName(asset.name));
+  const extension = vsix && {
+    name: vsix.name,
+    url: downloadUrl(repository, tag, vsix.name),
+    ...(vsix.size ? { size: vsix.size } : {}),
+  };
+  return {
+    version,
+    tag,
+    url,
+    ...(publishedAt ? { publishedAt } : {}),
+    installers,
+    ...(extension ? { extension } : {}),
+    sample: data.sample === true,
+  };
 }
 
 export interface Platform {

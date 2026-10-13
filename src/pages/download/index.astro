@@ -14,7 +14,7 @@ import {
 import { release } from "../../lib/release";
 
 const description =
-  "Download Genbeya for Windows, macOS or Linux — Electron, Tauri or Deno Desktop. Free installers, straight from the GitHub release.";
+  "Download Genbeya for Windows, macOS or Linux — Electron, Tauri or Deno Desktop — or as a VS Code extension. Free, straight from the GitHub release.";
 
 /** The recommended installer per system and architecture: what the big button offers. */
 const current = release;
@@ -233,6 +233,54 @@ const byOs = (os: string) => release?.installers.filter((installer) => installer
         </p>
       </section>
     )}
+
+    <section class="vscode container" id="vscode" aria-labelledby="vscode-title">
+      <div class="vscode__card">
+        <div class="vscode__text">
+          <p class="eyebrow">Also for VS Code</p>
+          <h2 id="vscode-title">Genbeya in your editor</h2>
+          <p>
+            The wiki and the tasks of the repository you have open, in VS Code: a page tree and a task list in the side
+            bar, rendered previews, the board with swimlanes, and <code>[[references]]</code>, <code>@mentions</code>{" "}
+            and <code>//dates</code> in the Markdown editor. It runs where the workspace is, in WSL, over SSH and in
+            containers too.
+          </p>
+          <ol class="vscode__steps">
+            <li>
+              Download the <code>.vsix</code>.
+            </li>
+            <li>
+              In VS Code, open the Extensions view, choose <em>…</em> → <em>Install from VSIX…</em> and pick the file.
+              Or run <code>code --install-extension {release?.extension?.name ?? "Genbeya-<version>-vscode.vsix"}</code>
+              .
+            </li>
+          </ol>
+          <p class="vscode__note">
+            Works in VS Code 1.140 or newer, and in editors built on it such as VSCodium and Cursor. The Marketplace and
+            Open VSX listings come later.
+          </p>
+        </div>
+        <div class="vscode__action">
+          {release?.extension ? (
+            <>
+              <a
+                class="button button--primary button--large"
+                href={release.extension.url}
+                data-download={release.extension.name}
+              >
+                Download for VS Code
+              </a>
+              <p class="vscode__file">
+                {release.extension.name}
+                {release.extension.size && <> · {formatSize(release.extension.size)}</>}
+              </p>
+            </>
+          ) : (
+            <p class="vscode__file">The extension comes with the next release.</p>
+          )}
+        </div>
+      </div>
+    </section>
 
     <section class="variants container" aria-labelledby="variants-title">
       <h2 id="variants-title">Which variant?</h2>
@@ -526,6 +574,46 @@ const byOs = (os: string) => release?.installers.filter((installer) => installer
   }
 
   .variants__grid,
+  .vscode {
+    margin-top: clamp(3rem, 7vw, 5rem);
+  }
+  .vscode__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: center;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-l);
+    background: radial-gradient(28rem 14rem at 0% 0%, rgb(124 127 242 / 0.14), transparent 70%), var(--surface);
+  }
+  .vscode h2 {
+    margin: 0.4rem 0 0.8rem;
+    font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+    letter-spacing: -0.035em;
+  }
+  .vscode__text > p {
+    max-width: 44rem;
+  }
+  .vscode__steps {
+    margin: 1rem 0;
+    padding-left: 1.25rem;
+  }
+  .vscode__steps li + li {
+    margin-top: 0.4rem;
+  }
+  .vscode__note,
+  .vscode__file {
+    color: var(--text-2);
+    font-size: 0.9rem;
+  }
+  .vscode__action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+  }
   .install__grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -608,6 +696,13 @@ const byOs = (os: string) => release?.installers.filter((installer) => installer
     .variants__grid,
     .install__grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+    .vscode__card {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .vscode__action {
+      align-items: flex-start;
+      text-align: left;
     }
   }
   @media (max-width: 39.99rem) {

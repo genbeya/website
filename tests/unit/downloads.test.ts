@@ -4,6 +4,7 @@ import {
   archName,
   downloadUrl,
   formatSize,
+  isExtensionName,
   parseInstallerName,
   pickInstaller,
   toRelease,
@@ -31,6 +32,24 @@ describe("parseInstallerName", () => {
     expect(parseInstallerName("genbeya-web-demo.zip")).toBeNull();
     expect(parseInstallerName("Genbeya-1.2.3-electron-windows-x64.exe.blockmap")).toBeNull();
     expect(parseInstallerName("checksums.txt")).toBeNull();
+  });
+});
+
+describe("the VS Code extension", () => {
+  it("is the release's .vsix, with its download link", () => {
+    expect(release.extension).toEqual({
+      name: "Genbeya-0.0.1-vscode.vsix",
+      url: `${repository}/releases/download/v0.0.1/Genbeya-0.0.1-vscode.vsix`,
+      size: 7200000,
+    });
+    expect(release.installers.some((installer) => installer.name.endsWith(".vsix"))).toBe(false);
+  });
+
+  it("is missing from releases without one", () => {
+    const without = { release: { version: "0.0.1", tag: "v0.0.1", url: "", assets: [] } };
+    expect(toRelease(without, repository)!.extension).toBeUndefined();
+    expect(isExtensionName("Genbeya-1.2.3-vscode.vsix")).toBe(true);
+    expect(isExtensionName("genbeya-web-demo.zip")).toBe(false);
   });
 });
 
