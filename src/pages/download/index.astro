@@ -65,8 +65,10 @@ const variants = [
   },
 ];
 
-/** Where the VS Code extension is listed; the publisher and the extension are both "genbeya". */
-const marketplace = "https://marketplace.visualstudio.com/items?itemName=genbeya.genbeya";
+/**
+ * The extension's Open VSX listing, for VSCodium, Cursor and other editors that use it. The Visual
+ * Studio Marketplace doesn't list it yet, so VS Code installs the release's .vsix.
+ */
 const openVsx = "https://open-vsx.org/extension/genbeya/genbeya";
 
 const byOs = (os: string) => release?.installers.filter((installer) => installer.os === os) ?? [];
@@ -251,34 +253,31 @@ const byOs = (os: string) => release?.installers.filter((installer) => installer
           </p>
           <ol class="vscode__steps">
             <li>
-              In VS Code, open the Extensions view, search for <strong>Genbeya</strong> and choose <em>Install</em>.
+              In VSCodium, Cursor and other editors that use <a href={openVsx}>Open VSX</a>, open the Extensions view,
+              search for <strong>Genbeya</strong> and choose <em>Install</em>.
             </li>
             <li>
-              Or install the <code>.vsix</code>: <em>…</em> → <em>Install from VSIX…</em> in the Extensions view, or{" "}
+              In VS Code, download the <code>.vsix</code> and choose <em>…</em> → <em>Install from VSIX…</em> in the
+              Extensions view, or run{" "}
               <code>code --install-extension {release?.extension?.name ?? "Genbeya-<version>-vscode.vsix"}</code>.
             </li>
           </ol>
           <p class="vscode__note">
-            Works in VS Code 1.140 or newer. VSCodium, Cursor and other editors built on VS Code install it from Open
-            VSX.
+            Works in VS Code 1.140 or newer. The Visual Studio Marketplace listing comes later.
           </p>
         </div>
         <div class="vscode__action">
-          <a class="button button--primary button--large" href={marketplace}>
-            Get it on the Marketplace
+          <a class="button button--primary button--large" href={openVsx}>
+            Get it on Open VSX
           </a>
-          <p class="vscode__links">
-            <a href={openVsx}>Open VSX</a>
-            {release?.extension && (
-              <>
-                {" · "}
-                <a href={release.extension.url} data-download={release.extension.name}>
-                  Download the .vsix
-                </a>
-                {release.extension.size && <> ({formatSize(release.extension.size)})</>}
-              </>
-            )}
-          </p>
+          {release?.extension && (
+            <p class="vscode__links">
+              <a href={release.extension.url} data-download={release.extension.name}>
+                Download the .vsix for VS Code
+              </a>
+              {release.extension.size && <> ({formatSize(release.extension.size)})</>}
+            </p>
+          )}
         </div>
       </div>
     </section>
