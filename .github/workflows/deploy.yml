@@ -1,15 +1,15 @@
 name: Deploy
 
-# Builds genbeya.fyi and deploys it to Cloudflare, as a Worker serving static assets. It runs
+# Builds genbeya.fyi and deploys it to Cloudflare, as a Worker serving static assets. It deploys
 # on every push to main, when the app repository announces a release (repository_dispatch of
-# type genbeya-release), and by hand. The documentation, the browser demo and the download list come from the app's latest
+# type genbeya-release), and by hand; pushes and pull requests to develop are built and tested only. The documentation, the browser demo and the download list come from the app's latest
 # v* release; before the first release, the docs come from the app's default branch, the demo
 # is a placeholder and the download page says the first release is coming.
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   repository_dispatch:
     types: [genbeya-release]
   workflow_dispatch:

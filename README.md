@@ -163,12 +163,19 @@ installer offered to mocked Windows, Mac (Apple silicon and Intel), Linux and iP
 (closes, comes back after a reload, doesn't cover content on phones), that no page requests anything from another
 origin, and that localStorage, sessionStorage, IndexedDB and cookies stay empty.
 
+## Branches
+
+`main` is what genbeya.fyi shows; `develop` collects approved changes until the next release. Both are protected:
+changes reach them only through pull requests. Branch off `develop` for each change and open the pull request into
+`develop`. To publish, open a pull request from `develop` into `main` — after the app's release, when the change
+depends on it, since the site takes the download list, the documentation and the demo from the app's latest release.
+
 ## Deploy
 
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds, tests and deploys the site to Cloudflare, as a Worker that only serves static assets
 ([`wrangler.toml`](wrangler.toml)):
 
-- on every push to `main` (pull requests are built and tested, not deployed),
+- on every push to `main` (pull requests, and pushes to `develop`, are built and tested, not deployed),
 - when the app repository announces a release (`repository_dispatch` of type `genbeya-release`),
 - and by hand (**Actions → Deploy → Run workflow**).
 
