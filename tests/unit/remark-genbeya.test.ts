@@ -109,6 +109,17 @@ describe("remark-genbeya: blocks", () => {
     expect(html).toContain('<a href="/docs/guide/wiki/">Wiki</a>');
   });
 
+  it("names plan blocks in a note, since the site has no tasks to draw them from", async () => {
+    const html = await render(
+      '[GANTT milestone=DEMO]\n\n[BURNDOWN]\n\n[EFFORT epic="Release 1.0"]\n\nSee [GANTT] in text.',
+    );
+    expect(html).toContain("<code>[GANTT milestone=DEMO]</code> is drawn from the repository's tasks");
+    expect(html).toContain("<code>[BURNDOWN]</code>");
+    expect(html).toContain('<code>[EFFORT epic="Release 1.0"]</code>');
+    expect(html).toContain("See [GANTT] in text.");
+    expect(html.match(/Live plan/g)).toHaveLength(3);
+  });
+
   it("embeds the lines of a file as a code block with its path, from the synced contents", async () => {
     const tree = await transform("![[src/client/app/app.ts#L2-L4]]");
     const codes: { lang?: string | null; meta?: string | null; value: string }[] = [];
