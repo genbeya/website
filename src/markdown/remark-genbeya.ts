@@ -355,6 +355,25 @@ function mathBlock(value: string): RootContent {
   } as Paragraph;
 }
 
+/** A plan block alone on its line, such as `[GANTT epic="Release 1.0"]`, as the app writes them. */
+const PLAN_BLOCK = /^\[(EFFORT|DEPENDENCIES|GANTT|ARROWS|FLOAT|BURNDOWN|BASELINE)(?:[ \t][^\]\n]*)?\]$/;
+
+/**
+ * Plans are drawn from the repository's tasks when the app shows the page, and the site has no
+ * tasks to draw them from: a note names the block instead, as PlantUML shows its source.
+ */
+function planNote(block: string): ContainerDirective {
+  return aside("note", "Live plan", [
+    {
+      type: "paragraph",
+      children: [
+        { type: "inlineCode", value: block },
+        text(" is drawn from the repository's tasks when Genbeya shows this page."),
+      ],
+    } as Paragraph,
+  ]);
+}
+
 function subpagesList(index: DocsIndex, page: DocsPage): List {
   const folder = page.source.replace(/\.md$/i, "") + "/";
   const children = index.pages
@@ -402,6 +421,10 @@ export default function remarkGenbeya(options: RemarkGenbeyaOptions) {
         }
         if (plain === "[SUBPAGES]" || plain === "[[_TOSP_]]" || plain === "[[TOSP]]") {
           parent.children.splice(position, 1, subpagesList(index, page));
+          return [SKIP, position + 1];
+        }
+        if (plain && PLAN_BLOCK.test(plain)) {
+          parent.children.splice(position, 1, planNote(plain) as never);
           return [SKIP, position + 1];
         }
         const embed = plain?.match(/^!\[\[([^[\]]+)\]\]$/);
