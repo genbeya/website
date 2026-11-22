@@ -45,8 +45,8 @@ const small: { icon: IconName; title: string; body: string }[] = [
       <p class="eyebrow">Inside the room</p>
       <h2 id="features-title">Everything a project needs, in one window</h2>
       <p>
-        A wiki, a task board, a code editor, Git tools and a terminal — working on the same plain files your team and
-        your tools already use.
+        A wiki, a task board with plans, pull requests, a code editor, Git tools and a terminal — working on the same
+        plain files your team and your tools already use.
       </p>
     </header>
 
@@ -94,6 +94,41 @@ const small: { icon: IconName; title: string; body: string }[] = [
             loading="lazy"
           />
         </figure>
+      </article>
+
+      <article class="card card--wide" data-reveal>
+        <span class="card__icon">
+          <Icon name="review" />
+        </span>
+        <h3>Pull requests, in the repository</h3>
+        <p>
+          Ask for a review of a branch. Comments on lines, suggested changes, to-dos and verdicts go into one Markdown
+          file next to the code, so the review travels with it. Approvals count while the change they approved is still
+          the one to merge.
+        </p>
+        <ul class="tags" aria-label="Pull request features">
+          <li>Line comments</li>
+          <li>Suggestions</li>
+          <li>Approvals</li>
+          <li>Merge</li>
+        </ul>
+      </article>
+
+      <article class="card card--wide" data-reveal>
+        <span class="card__icon">
+          <Icon name="plan" />
+        </span>
+        <h3>Plans from your tasks</h3>
+        <p>
+          Estimates, remaining effort, logged time and dependencies are task fields. A page draws the timeline, the
+          critical path and a burn chart from them, live, on your working days and holidays.
+        </p>
+        <ul class="tags" aria-label="Planning features">
+          <li>Time log</li>
+          <li>Critical path</li>
+          <li>Gantt</li>
+          <li>Burn chart</li>
+        </ul>
       </article>
 
       <article class="card card--git card--shot" data-reveal>
