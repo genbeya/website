@@ -35,6 +35,7 @@ import {
 } from "../src/markdown/docs-index.ts";
 import { parseReference, resolveReference } from "../src/markdown/references.ts";
 import { generatedDir, log, option, parseArgs, root, toPosix } from "./lib/cli.ts";
+import { drawPlans } from "./lib/plans.ts";
 
 const SCRIPT = "sync-docs";
 const DEFAULT_URL = "https://github.com/genbeya/genbeya";
@@ -239,7 +240,7 @@ export function writePlaceholder(url = DEFAULT_URL): void {
   log(SCRIPT, "Wrote a placeholder page; the app repository's docs were not synced.");
 }
 
-export function syncDocs(args = parseArgs()): void {
+export async function syncDocs(args = parseArgs()): Promise<void> {
   const docsArg = option(args, "docs", "GENBEYA_DOCS");
   const repo = path.resolve(
     root,
@@ -285,6 +286,7 @@ export function syncDocs(args = parseArgs()): void {
 
   const sources = markdown.map((file) => readFileSync(path.join(docsDir, file), "utf8").replace(/\r\n/g, "\n"));
   collectFiles(index, repo, sources);
+  await addPlans(index, repo, settings.taskRoot ?? "tasks", sources);
 
   rmSync(outDir, { recursive: true, force: true });
   for (const [i, page] of index.pages.entries()) {
@@ -318,9 +320,32 @@ export function syncDocs(args = parseArgs()): void {
   );
 }
 
+/** Plan blocks as the app draws them; without that (an older release, a failure) they stay a note. */
+async function addPlans(index: DocsIndex, repo: string, taskRoot: string, sources: string[]): Promise<void> {
+  const settingsFile = path.join(repo, ".genbeya.yml");
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const drawn = await drawPlans(
+      repo,
+      existsSync(settingsFile) ? readFileSync(settingsFile, "utf8") : null,
+      taskRoot,
+      sources,
+      today,
+    );
+    if (!drawn) return log(SCRIPT, "This release can't draw plans for the docs; plan blocks stay a note.");
+    const count = Object.keys(drawn.plans).length;
+    if (!count) return;
+    index.plans = drawn.plans;
+    index.plansAsOf = today;
+    log(SCRIPT, `Drew ${count} plan blocks from ${drawn.tasks} tasks, as of ${today}.`);
+  } catch (error) {
+    log(SCRIPT, `Plan blocks stay a note: ${(error as Error).message}`);
+  }
+}
+
 if (import.meta.main) {
   try {
-    syncDocs();
+    await syncDocs();
   } catch (error) {
     console.error(`[${SCRIPT}] ${(error as Error).message}`);
     process.exit(1);
