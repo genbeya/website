@@ -127,6 +127,13 @@ h1#_top {
   font-size: var(--sl-text-sm);
 }
 
+/* Notes that come with plans drawn from the tasks, as in the app: what is missing, which day they count from. */
+.sl-markdown-content .md-placeholder {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-sm);
+  font-style: italic;
+}
+
 /* References: what `[[…]]` renders, styled after the app's chips. */
 .gb-ref {
   display: inline-flex;

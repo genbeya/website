@@ -359,8 +359,9 @@ function mathBlock(value: string): RootContent {
 const PLAN_BLOCK = /^\[(EFFORT|DEPENDENCIES|GANTT|ARROWS|FLOAT|BURNDOWN|BASELINE)(?:[ \t][^\]\n]*)?\]$/;
 
 /**
- * Plans are drawn from the repository's tasks when the app shows the page, and the site has no
- * tasks to draw them from: a note names the block instead, as PlantUML shows its source.
+ * A plan block that wasn't drawn at sync time: plans over time, which need the tasks' Git
+ * history, and every block of a release that can't draw plans for the docs (before 0.2.1).
+ * A note names the block instead, as PlantUML shows its source.
  */
 function planNote(block: string): ContainerDirective {
   return aside("note", "Live plan", [
@@ -424,6 +425,12 @@ export default function remarkGenbeya(options: RemarkGenbeyaOptions) {
           return [SKIP, position + 1];
         }
         if (plain && PLAN_BLOCK.test(plain)) {
+          // Drawn at sync time with the app's own code: visited again, so its references and diagrams render.
+          const drawn = index.plans?.[plain];
+          if (drawn) {
+            parent.children.splice(position, 1, ...(structuredClone(drawn) as never[]));
+            return position;
+          }
           parent.children.splice(position, 1, planNote(plain) as never);
           return [SKIP, position + 1];
         }

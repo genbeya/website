@@ -13,7 +13,7 @@ import { syncDocs, writePlaceholder } from "./sync-docs.ts";
 
 if (!existsSync(path.join(generatedDir, "docs-index.json"))) {
   try {
-    syncDocs(new Map());
+    await syncDocs(new Map());
   } catch (error) {
     log("prepare", (error as Error).message);
     writePlaceholder();
