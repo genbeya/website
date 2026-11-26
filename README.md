@@ -48,7 +48,9 @@ when there is no clone), the browser demo (or a placeholder). Re-sync by hand af
 - **Documentation** — the app repository's wiki (`docs/`), the user documentation Genbeya keeps about itself.
   `npm run sync-docs` copies it to `src/content/docs/docs/` (ignored by Git), turns each page's first heading into
   Starlight's front matter, and writes `src/generated/docs-index.json`: the pages, the tasks of `tasks/`, the files that
-  references name and the contents of embedded files. Sources: `--repo` / `GENBEYA_REPO` (default `../genbeya`),
+  references name and the contents of embedded files. Plan blocks (`[EFFORT]`, `[GANTT]` and the others) are
+  drawn there too, by the app's own `src/shells/docs/plans.ts` (Genbeya 0.2.1 and newer), which `sync-docs` bundles from
+  the checkout with Vite; older releases, and `[BURNDOWN]` and `[BASELINE]`, keep a note naming the block. Sources: `--repo` / `GENBEYA_REPO` (default `../genbeya`),
   `--docs` / `GENBEYA_DOCS` (default the repository's wiki folder, `../genbeya/docs`), `--ref` / `GENBEYA_REF` (the Git
   ref links point at; default the release tag checked out, else `main`).
 - **Browser demo** — the static bundle the app's release ships as `genbeya-web-demo.zip`. `npm run sync-demo` installs

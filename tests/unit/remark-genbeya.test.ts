@@ -109,7 +109,36 @@ describe("remark-genbeya: blocks", () => {
     expect(html).toContain('<a href="/docs/guide/wiki/">Wiki</a>');
   });
 
-  it("names plan blocks in a note, since the site has no tasks to draw them from", async () => {
+  it("puts the plans drawn at sync time in place of their blocks, with live references", async () => {
+    const cell = (value: string) => ({ type: "tableCell", children: [{ type: "text", value }] });
+    const plans = {
+      "[EFFORT milestone=MVP]": [
+        {
+          type: "table",
+          align: [null, "right"],
+          children: [
+            { type: "tableRow", children: [cell("Task"), cell("Estimate")] },
+            { type: "tableRow", children: [cell("[[GENBEYA-9]]"), cell("8h")] },
+          ],
+        },
+        {
+          type: "paragraph",
+          data: { hProperties: { className: ["md-placeholder"] } },
+          children: [{ type: "text", value: "1 task lacks a remaining effort." }],
+        },
+      ],
+    };
+    const html = await render("[EFFORT milestone=MVP]\n\n[EFFORT]", "Guide/Wiki.md", {
+      index: { ...fixtureIndex(), plans },
+    });
+    expect(html).toContain("<table>");
+    expect(html).toContain("Harden SSH hosts");
+    expect(html).toContain('<p class="md-placeholder">1 task lacks a remaining effort.</p>');
+    // A block that wasn't drawn keeps its note.
+    expect(html).toContain("<code>[EFFORT]</code> is drawn from the repository's tasks");
+  });
+
+  it("names plan blocks it has no drawing for in a note", async () => {
     const html = await render(
       '[GANTT milestone=DEMO]\n\n[BURNDOWN]\n\n[EFFORT epic="Release 1.0"]\n\nSee [GANTT] in text.',
     );

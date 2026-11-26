@@ -46,6 +46,10 @@ export interface DocsIndex {
   files: Record<string, DocsFile>;
   /** Contents of the files the docs embed (`![[file]]`), keyed by path from the repository root. */
   embeds: Record<string, string>;
+  /** What each plan block of the docs becomes (Markdown nodes), drawn by the app's code at sync time, by the block's text. */
+  plans?: Record<string, unknown[]>;
+  /** The day the plans were drawn, `YYYY-MM-DD`. */
+  plansAsOf?: string;
 }
 
 /** Title of a page from its file name: `Getting-started.md` → `Getting started`. */
