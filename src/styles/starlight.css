@@ -127,6 +127,21 @@ h1#_top {
   font-size: var(--sl-text-sm);
 }
 
+/*
+ * Plans drawn from the tasks are tables of many columns. To fit the text column, their task chips
+ * leave out the status (the dot and the title say it) and sit tighter, and so do their cells.
+ */
+.sl-markdown-content table.gb-plan :is(th, td) {
+  padding-inline: 0.4rem;
+}
+.sl-markdown-content table.gb-plan .gb-ref {
+  gap: 0.25em;
+  padding: 0 0.3em;
+}
+.sl-markdown-content table.gb-plan .gb-ref__status {
+  display: none;
+}
+
 /* Notes that come with plans drawn from the tasks, as in the app: what is missing, which day they count from. */
 .sl-markdown-content .md-placeholder {
   color: var(--sl-color-gray-3);

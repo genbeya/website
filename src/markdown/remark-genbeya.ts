@@ -375,6 +375,15 @@ function planNote(block: string): ContainerDirective {
   ]);
 }
 
+/** A copy of a drawn plan, its tables marked `gb-plan`: they have many columns, and are styled to fit. */
+function planNodes(drawn: unknown[]): RootContent[] {
+  return (structuredClone(drawn) as RootContent[]).map((node) => {
+    if (node.type !== "table") return node;
+    const properties = (node.data?.hProperties ?? {}) as Props;
+    return { ...node, data: { ...node.data, hProperties: { ...properties, className: ["gb-plan"] } } };
+  });
+}
+
 function subpagesList(index: DocsIndex, page: DocsPage): List {
   const folder = page.source.replace(/\.md$/i, "") + "/";
   const children = index.pages
@@ -428,7 +437,7 @@ export default function remarkGenbeya(options: RemarkGenbeyaOptions) {
           // Drawn at sync time with the app's own code: visited again, so its references and diagrams render.
           const drawn = index.plans?.[plain];
           if (drawn) {
-            parent.children.splice(position, 1, ...(structuredClone(drawn) as never[]));
+            parent.children.splice(position, 1, ...(planNodes(drawn) as never[]));
             return position;
           }
           parent.children.splice(position, 1, planNote(plain) as never);
