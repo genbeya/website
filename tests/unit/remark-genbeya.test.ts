@@ -131,7 +131,7 @@ describe("remark-genbeya: blocks", () => {
     const html = await render("[EFFORT milestone=MVP]\n\n[EFFORT]", "Guide/Wiki.md", {
       index: { ...fixtureIndex(), plans },
     });
-    expect(html).toContain("<table>");
+    expect(html).toContain('<table class="gb-plan">');
     expect(html).toContain("Harden SSH hosts");
     expect(html).toContain('<p class="md-placeholder">1 task lacks a remaining effort.</p>');
     // A block that wasn't drawn keeps its note.
